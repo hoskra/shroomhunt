@@ -3,6 +3,7 @@
 
 # Production
 /build
+build_project/
 
 # Generated files
 .cache-loader

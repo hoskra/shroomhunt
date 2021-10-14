@@ -20,7 +20,7 @@ export interface EngineConfig extends SceneConfig {
 	// if true, the game will be automatically resized to fit the screen
 	resizeToScreen?: boolean;
 	// if true, the canvas will be transparent
-	transparent?: boolean;
+	backgroundAlpha ?: boolean;
 	// color of the canvas
 	backgroundColor?: number;
 	// will use antialias for rendering
@@ -44,7 +44,7 @@ export interface EngineConfig extends SceneConfig {
 const defaultConfig: EngineConfig = {
 	...sceneDefaultConfig,
 	resizeToScreen: false,
-	transparent: false,
+	backgroundAlpha : false,
 	backgroundColor: 0x000000,
 	antialias: true,
 	resolution: 1,

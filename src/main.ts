@@ -1,5 +1,6 @@
 import * as ECS from '../libs/pixi-ecs';
 import * as PIXI from 'pixi.js';
+// import { WINDOW_WIDTH, WINDOW_HEIGHT } from './constants/map-coordinates';
 
 // TODO rename your game
 class MyGame {
