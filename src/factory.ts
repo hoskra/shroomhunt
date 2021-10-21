@@ -2,59 +2,78 @@ import * as ECS from '../libs/pixi-ecs';
 import { Player } from './game-components/player';
 import { player1_constants, player2_constants } from './constants/player-constants';
 import { Assets } from './constants/enum';
-import { SpritesheetInfo } from './constants/spritesheet-info';
 import { WINDOW_HEIGHT, WINDOW_WIDTH } from './constants/game-constants';
+import { COORDS_CAVE, COORDS_PLATFORM } from './constants/map-coordinates';
+import { Cave } from './game-components/cave';
 
 export class Factory {
   loadLevel (scene: ECS.Scene) {
 
+		// platforms
+		const graphics = new PIXI.Graphics();
+		graphics.beginFill(0x8888aa);
+		graphics.drawRect(0,0,WINDOW_WIDTH, WINDOW_HEIGHT);
+		graphics.endFill();
+		COORDS_PLATFORM.forEach(p => {
+			graphics.lineStyle(5, 0xFFFFFF);
+			graphics.moveTo(p[0],      p[1] + 7);
+			graphics.lineTo(p[0]+p[2], p[1] + 7);
+		});
+		graphics.lineStyle(100, 0x555577);
+		graphics.moveTo(0, WINDOW_HEIGHT);
+		graphics.lineTo(WINDOW_WIDTH, WINDOW_HEIGHT);
+		scene.stage.addChild(graphics);
 
-		// const base = new BaseTexture('./assets/player1.png')
-		// base.setSize(64, 64) // Original image size
-		// const playerTexture = new Texture(base)
-		// playerTexture.frame = new Rectangle(0, 0, 40, 40)
-
-		// let texture = PIXI.Texture.from('./assets/spritesheet.png', {width: 232, height: 166}).clone();
-		// texture.frame = new PIXI.Rectangle(SpritesheetInfo.player2.x, SpritesheetInfo.player2.y,
-		// 		SpritesheetInfo.player2.width, SpritesheetInfo.player2.height);
-
-		// const sceneHeight = SCENE_WIDTH / (scene.app.view.width / scene.app.view.height);
-		// scene.assignGlobalAttribute('scene_height', sceneHeight);
-
-
-		// new ECS.Builder(scene)
-		// 	.localPos(player1_constants.start_x, player1_constants.start_y)
-		// 	.anchor(0.5)
-		// 	// .asSprite(PIXI.Texture.from('./assets/player1.gif'))
-		// 	.asSprite(PIXI.Texture.from(Assets.PLAYER1))
-		// 	.withParent(scene.stage)
-		// 	.withComponent(new Player(0, player1_constants))
-		// 	.build();
-
-			let x = new ECS.Builder(scene)
-			.localPos(100, 100)
+		// caves
+		// let caves = new ECS.Container('caves');
+		let id=0;
+		COORDS_CAVE.forEach(cave => {
+			let name = "cave" + id++;
+			new ECS.Builder(scene.stage)
 			.anchor(0.5)
 			.withParent(scene.stage)
-			.asText('Hello World', new PIXI.TextStyle({ fill: '#FF0000', fontSize: 80, fontFamily: 'Courier New' }))
+			.asSprite(PIXI.Texture.from(Assets.CAVE1))
+			.withComponent(new Cave(cave[0], cave[1]))
+			.withName(name)
 			.build();
 
-			x.vertexData = [215.5, 537, 744.5, 537, 744.5, 615, 215.5, 615];
+			if (Math.random() < 0.5) scene.findObjectByName(name).scale.x *= -1;
+		});
 
+		// baskets
+		new ECS.Builder(scene)
+		.localPos(player1_constants.start_x, player1_constants.start_y)
+		.anchor(0.5)
+		.asSprite(PIXI.Texture.from(Assets.BASKET1))
+		.withParent(scene.stage)
+		.build();
+		new ECS.Builder(scene)
+		.localPos(player2_constants.start_x, player2_constants.start_y)
+		.anchor(0.5)
+		.withParent(scene.stage)
+		.asSprite(PIXI.Texture.from(Assets.BASKET2))
+		.build();
 
-				console.log(scene)
-			// new ECS.Builder(scene)
-			// .anchor(0.5)
-			// .asSprite(this.createTexture(
-			// 	SpritesheetInfo.player2.x, SpritesheetInfo.player2.y,
-			// 	SpritesheetInfo.player2.width, SpritesheetInfo.player2.height))
-			// .withParent(scene.stage)
-			// .withComponent(new Player(0, player2_constants))
-			// .build();
+		// players
+		new ECS.Builder(scene)
+		.anchor(0.5)
+		.withParent(scene.stage)
+		.asSprite(PIXI.Texture.from(Assets.PLAYER1))
+		.withComponent(new Player(0, player1_constants))
+		.build();
+		new ECS.Builder(scene.stage)
+		.anchor(0.5)
+		.withParent(scene.stage)
+		.asSprite(PIXI.Texture.from(Assets.PLAYER2))
+		.withComponent(new Player(1, player2_constants))
+		.build();
+
+		// shroomhunt
+		new ECS.Builder(scene.stage)
+		.localPos(WINDOW_HEIGHT* 0.5, WINDOW_HEIGHT* 0.96)
+		.anchor(0.5)
+		.withParent(scene.stage)
+		.asText('ShroomHunt', new PIXI.TextStyle({ fill: '#000000', fontSize: 60, fontFamily: 'Courier New' }))
+		.build();
   }
-
-  private createTexture(offsetX: number, offsetY: number, width: number, height: number) {
-		let texture = PIXI.Texture.from('spritesheet').clone();
-		texture.frame = new PIXI.Rectangle(offsetX, offsetY, width, height);
-		return texture;
-	}
 }

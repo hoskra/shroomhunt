@@ -6,5 +6,12 @@ export enum GameState {
 
 export enum Assets {
 	SPRITESHEET = 'spritesheet',
-	PLAYER1 = 'player1'
+	BASKET1 = 'basket1',
+	BASKET2 = 'basket2',
+	PLAYER1 = 'player1',
+	PLAYER2 = 'player2',
+	CAVE1 = 'cave1',
+	MONSTER = 'monster',
+	SHROOM = 'shroom',
+	SPECIAL_SHROOM = 'special_shroom'
 }

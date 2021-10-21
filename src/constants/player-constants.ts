@@ -6,7 +6,8 @@ export class PlayerConstants {
     public baskey_y: number,
     public left_code: number,
     public right_code: number,
-    public jump_code: number
+    public jump_code: number,
+    public facingLeft: boolean
   ) {
       this.start_x = start_x;
       this.start_y = start_y;
@@ -15,25 +16,28 @@ export class PlayerConstants {
       this.left_code = left_code;
       this.right_code = right_code;
       this.jump_code = jump_code;
+      this.facingLeft = facingLeft;
   }
 }
 
 export const player1_constants : PlayerConstants = new PlayerConstants(
-  130,
-  411,
+  770,
+  440,
   130,
   411,
   37,
   39,
-  38
-)
+  38,
+  true
+  )
 
-export const player2_constants : PlayerConstants = new PlayerConstants(
-  770,
-  440,
+  export const player2_constants : PlayerConstants = new PlayerConstants(
+  130,
+  411,
   770,
   440,
   65,
   68,
-  87
+  87,
+  false
 )

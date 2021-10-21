@@ -1,19 +1,28 @@
 import * as ECS from '../../libs/pixi-ecs';
+import { WINDOW_WIDTH } from '../constants/game-constants';
 import { PlayerConstants } from '../constants/player-constants';
-
 
 export class Player extends ECS.Component {
 
   score: number;
   health: number;
+  move: number = 4;
+  offet: number = 25;
+  facingLeft: boolean;
+  previousDirectionLeft: boolean;
 
   constructor(
     public playerID: number,
     private playerConstants: PlayerConstants ) {
       super();
-  }
+    }
 
   onInit() {
+    this.owner.position.x = this.playerConstants.start_x;
+    this.owner.position.y = this.playerConstants.start_y;
+    this.facingLeft = this.playerConstants.facingLeft;
+    this.previousDirectionLeft = this.playerConstants.facingLeft;
+    if(!this.facingLeft) this.owner.scale.x *= -1;
     this.score = 0;
     this.health = 0;
   }
@@ -29,15 +38,23 @@ export class Player extends ECS.Component {
     if(keyInputCmp.isKeyPressed(this.playerConstants.jump_code)) {
       this.jump();
     }
-
   }
 
   moveLeft() {
-    this.owner.position.x++;
+    if(this.owner.position.x > this.offet) {
+      if(!this.previousDirectionLeft) this.owner.scale.x *= -1;
+      this.previousDirectionLeft = true;
+      this.owner.position.x -= this.move;
+    }
   }
 
   moveRight() {
-    this.owner.position.y--;
+    if(this.owner.position.x < WINDOW_WIDTH - this.offet) {
+
+      if(this.previousDirectionLeft) this.owner.scale.x *= -1;
+      this.previousDirectionLeft = false;
+      this.owner.position.x += this.move;
+    }
   }
 
   jump () {
