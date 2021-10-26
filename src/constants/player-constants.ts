@@ -1,43 +1,23 @@
-export class PlayerConstants {
-  constructor(
-    public start_x: number,
-    public start_y: number,
-    public baskey_x: number,
-    public baskey_y: number,
-    public left_code: number,
-    public right_code: number,
-    public jump_code: number,
-    public facingLeft: boolean
-  ) {
-      this.start_x = start_x;
-      this.start_y = start_y;
-      this.baskey_x = baskey_x;
-      this.baskey_y = baskey_y;
-      this.left_code = left_code;
-      this.right_code = right_code;
-      this.jump_code = jump_code;
-      this.facingLeft = facingLeft;
-  }
+export const player1_constants = {
+  "start_x" : 770,
+  "start_y" : 440,
+  "baskey_x" : 130,
+  "baskey_y" : 411,
+  "left_code" : 37,
+  "right_code" : 39,
+  "down_code" : 40,
+  "jump_code" : 38,
+  "facingLeft" : true
 }
 
-export const player1_constants : PlayerConstants = new PlayerConstants(
-  770,
-  440,
-  130,
-  411,
-  37,
-  39,
-  38,
-  true
-  )
-
-  export const player2_constants : PlayerConstants = new PlayerConstants(
-  130,
-  411,
-  770,
-  440,
-  65,
-  68,
-  87,
-  false
-)
+export const player2_constants = {
+  "start_x" : 130,
+  "start_y" : 411,
+  "baskey_x" : 770,
+  "baskey_y" : 440,
+  "left_code" : 65,
+  "right_code" : 68,
+  "down_code" : 83,
+  "jump_code" : 87,
+  "facingLeft" : false
+}

@@ -6,9 +6,13 @@ import { GameState } from '../constants/enum';
 export class GameStatus extends ECS.Component {
 
   time: number;
+  player1_score: number;
+  player2_score: number;
 
   constructor(public multiplayer: boolean) {
     super();
+    this.player1_score = 0;
+    this.player2_score = 0;
   }
 
   onInit() {

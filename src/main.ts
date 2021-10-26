@@ -1,4 +1,5 @@
 import * as ECS from '../libs/pixi-ecs';
+import { GameStatus } from './game-components/game-status';
 import { Assets } from './constants/enum';
 import { WINDOW_WIDTH, WINDOW_HEIGHT } from './constants/game-constants';
 import { Factory } from './factory';
@@ -44,9 +45,13 @@ class ShroomHunt {
 	onAssetsLoaded() {
 		let scene = this.engine.scene;
 		scene.addGlobalComponent(new ECS.KeyInputComponent);
+		scene.addGlobalComponent(new GameStatus(true));
+
 
 		const factory = new Factory();
+
 		factory.loadLevel(this.engine.scene);
+
 
 	}
 }
