@@ -39,20 +39,17 @@ class ShroomHunt {
 			.add(Assets.PLAYER2, './assets/player2.gif')
 			.add(Assets.SHROOM, './assets/shroom.gif')
 			.add(Assets.SPECIAL_SHROOM, './assets/special_shroom.gif')
+			.add(Assets.MUSHROOM, './assets/mushroom.png')
+			.add(Assets.HEART, './assets/hearts.png')
 			.load(() => this.onAssetsLoaded());
 	}
 
 	onAssetsLoaded() {
 		let scene = this.engine.scene;
 		scene.addGlobalComponent(new ECS.KeyInputComponent);
-		scene.addGlobalComponent(new GameStatus(true));
 
-
-		const factory = new Factory();
-
-		factory.loadLevel(this.engine.scene);
-
-
+		this.engine.scene.stage.addComponentAndRun(new GameStatus());
+		this.engine.scene.stage.addComponentAndRun(new Factory(scene));
 	}
 }
 

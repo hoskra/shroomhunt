@@ -1,41 +1,55 @@
 import * as ECS from '../../libs/pixi-ecs';
 import { TIME_LIMIT } from '../constants/game-constants';
-import { ComponentState } from '../../libs/pixi-ecs/engine/component';
-import { GameState } from '../constants/enum';
-
+import { Messages } from '../constants/enum';
+import { GameStates } from '../constants/enum';
 export class GameStatus extends ECS.Component {
 
   time: number;
-  player1_score: number;
-  player2_score: number;
+  stateId: number;
+  multiplayer: boolean;
 
-  constructor(public multiplayer: boolean) {
+  constructor() {
     super();
-    this.player1_score = 0;
-    this.player2_score = 0;
+    this.stateId = GameStates.WELCOME_SCREEN;
+  }
+
+  getStateId() {
+    return this.stateId;
+  }
+
+  setMultiplayer(multiplayer: boolean) {
+    this.multiplayer = multiplayer;
   }
 
   onInit() {
     this.time = TIME_LIMIT;
+    this.subscribe(Messages.GAME_START, Messages.GAME_PAUSE, Messages.GAME_FINISH, Messages.GAME_RESTART);
   }
 
-  // START_SCREEN = 0,
-	// GAME_RUNNING = 1,
-	// SCORE_BOARD = 3
-
-  onMessage(msg: any) {
-    if(msg == GameState.START_SCREEN) {
-      this._cmpState = ComponentState.RUNNING;
-    }
-    if(msg == GameState.SCORE_BOARD) {
-      this._cmpState = ComponentState.FINISHED;
+  onMessage(msg: ECS.Message) {
+    switch(msg.action) {
+      case Messages.GAME_START:
+        this.stateId = GameStates.START;
+        console.log("Game started.")
+        break;
+        case Messages.GAME_PAUSE:
+        this.stateId = GameStates.PAUSE;
+        console.log("Game paused.")
+        break;
+      case Messages.GAME_FINISH:
+        this.stateId = GameStates.FINISH;
+        console.log("Game finished.")
+        break;
+      case Messages.GAME_RESTART:
+        this.stateId = GameStates.RESTART;
+        this.time = TIME_LIMIT;
+        console.log("Game restarting.")
+        break;
     }
   }
 
-  onUpdate(deltaTime: number) {
-    if(GameState.GAME_RUNNING) {
-      this.time -= deltaTime;
-    }
+  onUpdate(delta: number, absolute: number) {
+
   }
 
 }
