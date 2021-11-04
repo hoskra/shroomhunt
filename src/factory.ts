@@ -32,7 +32,7 @@ export class Factory extends ECS.Component {
 			Builders.backgroundBuilder(this.scene);
 			Builders.caveBuilder(this.scene, true);
 			Builders.platformsBuilder(this.scene);
-			Builders.basketsBuilder(this.scene, this.multiplayer);
+			Builders.basketsBuilder(this.scene);
 
 			this.SM = this.scene.findGlobalComponentByName<ShroomManager>(ShroomManager.name);
 			this.SM.growShrooms(this.scene);
@@ -40,9 +40,9 @@ export class Factory extends ECS.Component {
 
 
 			Builders.monsterBuilder(this.scene);
-			Builders.playersBuilder(this.scene, this.multiplayer);
+			Builders.playersBuilder(this.scene);
 
-			Builders.scoreBuilder(this.scene, this.multiplayer);
+			Builders.scoreBuilder(this.scene);
 
 		});
 	}

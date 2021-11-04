@@ -4,6 +4,7 @@ import { Assets, Colors, Tags } from './constants/enum';
 import { WINDOW_HEIGHT, WINDOW_WIDTH, SHROOM_CNT, SPECIAL_SHROOM_CNT } from './constants/game-constants';
 import { CAVES, COORDS_PLATFORM, SHROOM_VALID_COORDS, SPECIAL_SHROOM_VALID_COORDS } from './constants/map-coordinates';
 import { player1_constants, player2_constants } from './constants/player-constants';
+import { GameStatus } from './game-components/game-status';
 import { Player } from './game-components/player';
 
 import { TimeCounter } from './game-components/time-counter'
@@ -27,7 +28,7 @@ export class Builders {
       .build();
   }
 
-  static basketBuilder = (scene: ECS.Scene, x: number, y: number, anchor_x: number, anchor_y: number, asset: string)  => {
+  static simpleBuilder = (scene: ECS.Scene, x: number, y: number, anchor_x: number, anchor_y: number, asset: string)  => {
     new ECS.Builder(scene)
     .localPos(x, y)
     .anchor(anchor_x, anchor_y)
@@ -45,10 +46,14 @@ export class Builders {
   }
 
   static welcomeScreenBuilder = (scene: ECS.Scene) => {
+    let center = WINDOW_WIDTH*0.1;
     this.textBuilder(scene, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.3, "Shroomhunt", 60, "Shroomhunt");
-    this.textBuilder(scene, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.5, "1 player ", 40, "1p");
-    this.textBuilder(scene, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.6, "2 players", 40, "2p");
-    this.textBuilder(scene, WINDOW_WIDTH * 0.35, WINDOW_HEIGHT * 0.5, ">", 40, "selection");
+    this.textBuilder(scene, WINDOW_WIDTH * 0.5 - center, WINDOW_HEIGHT * 0.5, "1 player ", 40, "1p");
+    this.simpleBuilder(scene,  WINDOW_WIDTH * 0.8 - center, WINDOW_HEIGHT * 0.5, 0.5, 0.6, Assets.PLAYER1)
+    this.textBuilder(scene, WINDOW_WIDTH * 0.5 - center, WINDOW_HEIGHT * 0.6, "2 players", 40, "2p");
+    this.simpleBuilder(scene,  WINDOW_WIDTH * 0.75 - center, WINDOW_HEIGHT * 0.6, 0.5, 0.6, Assets.PLAYER1)
+    this.simpleBuilder(scene,  WINDOW_WIDTH * 0.85 - center, WINDOW_HEIGHT * 0.6, 0.5, 0.6, Assets.PLAYER2)
+    this.textBuilder(scene, WINDOW_WIDTH * 0.35 - center, WINDOW_HEIGHT * 0.5, ">", 40, "selection");
   }
 
   static finishScreenBuild = (scene: ECS.Scene, score1: number, score2: number = -1) => {
@@ -63,7 +68,7 @@ export class Builders {
     if(score2 == -1) {
       this.textBuilder(scene, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.3, "Game over!", 60, "gameover");
       this.textBuilder(scene, WINDOW_WIDTH * 0.4, WINDOW_HEIGHT * 0.5, "Player 1 score: " + score1, 40, "1p");
-      this.basketBuilder(scene,  WINDOW_WIDTH * 0.8, WINDOW_HEIGHT * 0.5, 0.5, 0.6, Assets.PLAYER1)
+      this.simpleBuilder(scene,  WINDOW_WIDTH * 0.8, WINDOW_HEIGHT * 0.5, 0.5, 0.6, Assets.PLAYER1)
 
     } else {
 
@@ -72,48 +77,25 @@ export class Builders {
 
       this.textBuilder(scene, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.3, message, 60, "gameover");
       this.textBuilder(scene, WINDOW_WIDTH * 0.4, WINDOW_HEIGHT * 0.5, "Player 1 score: " + score1, 40, "1p");
-      this.basketBuilder(scene,  WINDOW_WIDTH * 0.8, WINDOW_HEIGHT * 0.5, 0.5, 0.6, Assets.PLAYER1)
+      this.simpleBuilder(scene,  WINDOW_WIDTH * 0.75, WINDOW_HEIGHT * 0.5, 0.5, 0.6, Assets.PLAYER1)
       this.textBuilder(scene, WINDOW_WIDTH * 0.4, WINDOW_HEIGHT * 0.6, "Player 2 score: " + score2, 40, "2p");
-      this.basketBuilder(scene,  WINDOW_WIDTH * 0.8, WINDOW_HEIGHT * 0.6, 0.5, 0.6, Assets.PLAYER2)
+      this.simpleBuilder(scene,  WINDOW_WIDTH * 0.75, WINDOW_HEIGHT * 0.6, 0.5, 0.6, Assets.PLAYER2)
     }
   }
 
-  static basketsBuilder(scene: ECS.Scene, multiplayer: boolean) {
-    this.basketBuilder(scene, player1_constants.start_x, player1_constants.start_y, 0.5, 0.6, Assets.BASKET1)
-    multiplayer && this.basketBuilder(scene, player2_constants.start_x, player2_constants.start_y, 0.5, 0.6, Assets.BASKET2)
+  static basketsBuilder(scene: ECS.Scene) {
+    this.simpleBuilder(scene, player1_constants.start_x, player1_constants.start_y, 0.5, 0.6, Assets.BASKET1)
+		const GS = scene.findGlobalComponentByName<GameStatus>(GameStatus.name);
+
+    GS.isMultiplayer() && this.simpleBuilder(scene, player2_constants.start_x, player2_constants.start_y, 0.5, 0.6, Assets.BASKET2)
 	}
 
-  static playersBuilder(scene: ECS.Scene, multiplayer: boolean) {
+  static playersBuilder(scene: ECS.Scene) {
     this.playerBuilder(scene, 0.5, 1, Assets.PLAYER1, new Player(0, player1_constants), "player1");
-    multiplayer && this.playerBuilder(scene, 0.5, 1, Assets.PLAYER2, new Player(1, player2_constants), "player2");
+		const GS = scene.findGlobalComponentByName<GameStatus>(GameStatus.name);
+
+    GS.isMultiplayer() && this.playerBuilder(scene, 0.5, 1, Assets.PLAYER2, new Player(1, player2_constants), "player2");
 	}
-
-  static shroomBuilder(scene: ECS.Scene, shroomCnt: number, coords: [number, number][], asset: string, tag: string) {
-		let shroom_vector = [];
-		for(let i = 0; i < shroomCnt; i++) shroom_vector.push(1)
-		for(let i = 0; i < coords.length - shroomCnt; i++) shroom_vector.push(0)
-		shuffle(shroom_vector);
-
-		coords.forEach((shroom, index) => {
-			if(shroom_vector[index])
-        new ECS.Builder(scene.stage)
-          .localPos(shroom[1], shroom[0])
-          .anchor(0.5, 1)
-          .withTag(tag)
-          .withParent(scene.stage)
-          .asSprite(PIXI.Texture.from(asset))
-          .withName(asset + index)
-          .build();
-		} )
-	}
-
-  static shroomsBuilder(scene: ECS.Scene, special: boolean) {
-    if(special) {
-      this.shroomBuilder(scene, SPECIAL_SHROOM_CNT, SPECIAL_SHROOM_VALID_COORDS, Assets.SPECIAL_SHROOM, Tags.SPECIAL_SHROOM)
-    } else {
-      this.shroomBuilder(scene, SHROOM_CNT, SHROOM_VALID_COORDS, Assets.SHROOM, Tags.SHROOM)
-    }
-  }
 
   static caveBuilder(scene: ECS.Scene, debug: boolean = false) {
 		Object.keys(CAVES).forEach((key) => {
@@ -184,7 +166,9 @@ export class Builders {
       .build();
   }
 
-  static scoreBuilder(scene: ECS.Scene, multiplayer: boolean = true) {
+  static scoreBuilder(scene: ECS.Scene) {
+		const GS = scene.findGlobalComponentByName<GameStatus>(GameStatus.name);
+
     let y = 9.6*WINDOW_HEIGHT/10;
     let f = WINDOW_WIDTH/10;
 
@@ -200,7 +184,7 @@ export class Builders {
     this.playerStats(scene, f*7, y, "p1_score", "p1_health");
 
 
-    if(multiplayer) {
+    if(GS.isMultiplayer()) {
       this.playerStats(scene, f, y, "p2_score", "p2_health");
     }
 

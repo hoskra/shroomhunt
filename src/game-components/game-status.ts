@@ -32,6 +32,10 @@ export class GameStatus extends ECS.Component {
     return this.stateId;
   }
 
+  isMultiplayer() {
+    return this.multiplayer;
+  }
+
   setMultiplayer(multiplayer: boolean) {
     this.multiplayer = multiplayer;
   }
