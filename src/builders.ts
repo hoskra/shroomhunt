@@ -1,10 +1,12 @@
 import * as ECS from '../libs/pixi-ecs';
 import { Component } from '../libs/pixi-ecs';
 import { Assets, Colors, Tags } from './constants/enum';
-import { WINDOW_HEIGHT, WINDOW_WIDTH } from './constants/game-constants';
+import { WINDOW_HEIGHT, WINDOW_WIDTH, SHROOM_CNT, SPECIAL_SHROOM_CNT } from './constants/game-constants';
 import { CAVES, COORDS_PLATFORM, SHROOM_VALID_COORDS, SPECIAL_SHROOM_VALID_COORDS } from './constants/map-coordinates';
 import { player1_constants, player2_constants } from './constants/player-constants';
 import { Player } from './game-components/player';
+
+import { TimeCounter } from './game-components/time-counter'
 
 function shuffle(array) {
 	for (let i = array.length - 1; i > 0; i--) {
@@ -33,11 +35,12 @@ export class Builders {
     .withParent(scene.stage).build();
   }
 
-  static playerBuilder = (scene: ECS.Scene, anchor_x: number, anchor_y: number, asset: string, cmp: Component<any>)  => {
+  static playerBuilder = (scene: ECS.Scene, anchor_x: number, anchor_y: number, asset: string, cmp: Component<any>, name: string)  => {
     new ECS.Builder(scene)
     .anchor(anchor_x, anchor_y)
     .asSprite(PIXI.Texture.from(asset))
     .withComponent(cmp)
+    .withName(name)
     .withParent(scene.stage).build();
   }
 
@@ -48,14 +51,41 @@ export class Builders {
     this.textBuilder(scene, WINDOW_WIDTH * 0.35, WINDOW_HEIGHT * 0.5, ">", 40, "selection");
   }
 
+  static finishScreenBuild = (scene: ECS.Scene, score1: number, score2: number = -1) => {
+    const graphics = new PIXI.Graphics();
+
+    graphics.beginFill(0x000000);
+		graphics.drawRect(0,0,WINDOW_WIDTH, WINDOW_HEIGHT);
+		graphics.endFill();
+
+    scene.stage.addChild(graphics);
+
+    if(score2 == -1) {
+      this.textBuilder(scene, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.3, "Game over!", 60, "gameover");
+      this.textBuilder(scene, WINDOW_WIDTH * 0.4, WINDOW_HEIGHT * 0.5, "Player 1 score: " + score1, 40, "1p");
+      this.basketBuilder(scene,  WINDOW_WIDTH * 0.8, WINDOW_HEIGHT * 0.5, 0.5, 0.6, Assets.PLAYER1)
+
+    } else {
+
+      let message = "Player 1 wins!";
+      if(score1 < score2) message = "Player 2 wins!";
+
+      this.textBuilder(scene, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.3, message, 60, "gameover");
+      this.textBuilder(scene, WINDOW_WIDTH * 0.4, WINDOW_HEIGHT * 0.5, "Player 1 score: " + score1, 40, "1p");
+      this.basketBuilder(scene,  WINDOW_WIDTH * 0.8, WINDOW_HEIGHT * 0.5, 0.5, 0.6, Assets.PLAYER1)
+      this.textBuilder(scene, WINDOW_WIDTH * 0.4, WINDOW_HEIGHT * 0.6, "Player 2 score: " + score2, 40, "2p");
+      this.basketBuilder(scene,  WINDOW_WIDTH * 0.8, WINDOW_HEIGHT * 0.6, 0.5, 0.6, Assets.PLAYER2)
+    }
+  }
+
   static basketsBuilder(scene: ECS.Scene, multiplayer: boolean) {
     this.basketBuilder(scene, player1_constants.start_x, player1_constants.start_y, 0.5, 0.6, Assets.BASKET1)
     multiplayer && this.basketBuilder(scene, player2_constants.start_x, player2_constants.start_y, 0.5, 0.6, Assets.BASKET2)
 	}
 
   static playersBuilder(scene: ECS.Scene, multiplayer: boolean) {
-    this.playerBuilder(scene, 0.5, 1, Assets.PLAYER1, new Player(0, player1_constants));
-    multiplayer && this.playerBuilder(scene, 0.5, 1, Assets.PLAYER2, new Player(0, player2_constants));
+    this.playerBuilder(scene, 0.5, 1, Assets.PLAYER1, new Player(0, player1_constants), "player1");
+    multiplayer && this.playerBuilder(scene, 0.5, 1, Assets.PLAYER2, new Player(1, player2_constants), "player2");
 	}
 
   static shroomBuilder(scene: ECS.Scene, shroomCnt: number, coords: [number, number][], asset: string, tag: string) {
@@ -72,16 +102,16 @@ export class Builders {
           .withTag(tag)
           .withParent(scene.stage)
           .asSprite(PIXI.Texture.from(asset))
-          .withName(index)
+          .withName(asset + index)
           .build();
 		} )
 	}
 
-  static shroomsBuilder(scene: ECS.Scene, shroomCnt: number, special: boolean) {
+  static shroomsBuilder(scene: ECS.Scene, special: boolean) {
     if(special) {
-      this.shroomBuilder(scene, shroomCnt, SPECIAL_SHROOM_VALID_COORDS, Assets.SPECIAL_SHROOM, Tags.SPECIAL_SHROOM)
+      this.shroomBuilder(scene, SPECIAL_SHROOM_CNT, SPECIAL_SHROOM_VALID_COORDS, Assets.SPECIAL_SHROOM, Tags.SPECIAL_SHROOM)
     } else {
-      this.shroomBuilder(scene, shroomCnt, SHROOM_VALID_COORDS, Assets.SHROOM, Tags.SHROOM)
+      this.shroomBuilder(scene, SHROOM_CNT, SHROOM_VALID_COORDS, Assets.SHROOM, Tags.SHROOM)
     }
   }
 
@@ -129,46 +159,54 @@ export class Builders {
 		scene.stage.addChild(graphics);
 	}
 
-	static playerStats (scene: ECS.Scene, x: number, y: number, scoreName: string, healthName: string) {
+	static playerStats(scene: ECS.Scene, x: number, y: number, scoreName: string, healthName: string) {
     let mushroom_offset = 55;
     let heart_offset    = 35;
 
-    this.textBuilder(scene, x, y, "000", 35, scoreName);
+    this.textBuilder(scene, x, y, "0", 35, scoreName);
     new ECS.Builder(scene)
-    .localPos(x + mushroom_offset, y)
-    .anchor(0.5)
-    .asSprite(PIXI.Texture.from(Assets.MUSHROOM))
-    .withParent(scene.stage)
-    .scale(0.7)
-    .build();
+      .localPos(x + mushroom_offset, y)
+      .anchor(0.5)
+      .asSprite(PIXI.Texture.from(Assets.MUSHROOM))
+      .withParent(scene.stage)
+      .scale(0.7)
+      .build();
 
     x += 150;
 
     this.textBuilder(scene, x, y, "3", 35, healthName);
     new ECS.Builder(scene)
-    .localPos(x + heart_offset, y)
-    .anchor(0.5)
-    .asSprite(PIXI.Texture.from(Assets.HEART))
-    .withParent(scene.stage)
-    .scale(0.7)
-    .build();
+      .localPos(x + heart_offset, y)
+      .anchor(0.5)
+      .asSprite(PIXI.Texture.from(Assets.HEART))
+      .withParent(scene.stage)
+      .scale(0.7)
+      .build();
   }
 
-  static scoreBuilder (scene: ECS.Scene, multiplayer: boolean = true) {
+  static scoreBuilder(scene: ECS.Scene, multiplayer: boolean = true) {
     let y = 9.6*WINDOW_HEIGHT/10;
     let f = WINDOW_WIDTH/10;
 
-    this.textBuilder(scene, f*5, y, "00:00", 35, "time");
+    new ECS.Builder(scene.stage)
+      .localPos(f*5, y)
+      .anchor(0.5)
+      .withName("time")
+      .withParent(scene.stage)
+      .asText("00:00", new PIXI.TextStyle({ fill: '#ffffff', fontSize: 35, fontFamily: 'Courier New' }))
+      .withComponent(new TimeCounter())
+      .build();
+
     this.playerStats(scene, f*7, y, "p1_score", "p1_health");
+
 
     if(multiplayer) {
       this.playerStats(scene, f, y, "p2_score", "p2_health");
     }
 
-
   }
 
-  static monsterBuilder (scene: ECS.Scene) {
+  static monsterBuilder(scene: ECS.Scene) {
     let monster = Math.floor(Math.random() * (Object.keys(CAVES).length));
 
     new ECS.Builder(scene)

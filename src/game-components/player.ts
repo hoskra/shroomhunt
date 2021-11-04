@@ -1,10 +1,13 @@
 import * as ECS from '../../libs/pixi-ecs';
-import { WINDOW_WIDTH } from '../constants/game-constants';
-import { CAVES, COORDS_PLATFORM } from '../constants/map-coordinates';
+import { MAXIMUM_CARRY, SHROOM_CNT, SPECIAL_SHROOM_BONUS, WINDOW_HEIGHT, WINDOW_WIDTH } from '../constants/game-constants';
+import { CAVES, COORDS_PLATFORM, SHROOM_VALID_COORDS, SPECIAL_SHROOM_VALID_COORDS } from '../constants/map-coordinates';
+import { GameStatus } from './game-status';
+import { ShroomManager } from './shroomManager';
 
 export class Player extends ECS.Component {
 
   score: number;
+  takenShrooms: number;
   health: number;
   move: number = 4;
   offset: number = 25;
@@ -13,6 +16,7 @@ export class Player extends ECS.Component {
   jumping: number;
   entering: number;
   isStandingOnPlatform: boolean;
+  GS: GameStatus;
 
   constructor(
     public playerID: number,
@@ -20,21 +24,28 @@ export class Player extends ECS.Component {
       super();
     }
 
+  getScore() { return this.score; }
+
   onInit() {
     this.owner.position.x = this.playerConstants.start_x;
     this.owner.position.y = this.playerConstants.start_y;
     this.facingLeft = this.playerConstants.facingLeft;
     this.previousDirectionLeft = this.playerConstants.facingLeft;
     this.score = 0;
+    this.takenShrooms = 0;
     this.health = 0;
     this.jumping = 0;
     this.entering = 0;
     this.isStandingOnPlatform = true;
+    this.GS = this.scene.findGlobalComponentByName<GameStatus>(GameStatus.name);
+
     if(!this.facingLeft) this.owner.scale.x *= -1;
   }
 
   onUpdate(delta: number, absolute: number) {
     const keyInputCmp = this.scene.findGlobalComponentByName<ECS.KeyInputComponent>(ECS.KeyInputComponent.name);
+    const shroomManagerCmp = this.scene.findGlobalComponentByName<ShroomManager>(ShroomManager.name);
+
     if(keyInputCmp.isKeyPressed(this.playerConstants.left_code))  { this.moveLeft (delta * 0.25); }
     if(keyInputCmp.isKeyPressed(this.playerConstants.right_code)) { this.moveRight(delta * 0.25); }
     if(keyInputCmp.isKeyPressed(this.playerConstants.jump_code))  { this.jump(); }
@@ -68,6 +79,53 @@ export class Player extends ECS.Component {
       this.entering --;
     }
 
+    if(this.owner.y > WINDOW_HEIGHT + 100) {
+      this.owner.position.x = this.playerConstants.start_x;
+      this.owner.position.y = this.playerConstants.start_y;
+    }
+
+    if(this.takenShrooms < MAXIMUM_CARRY)
+      SHROOM_VALID_COORDS.forEach((shroom, index) => {
+        if (shroomManagerCmp.shroomVector[index]) {
+          if(Math.abs(this.owner.position.x - shroom[1]) <= 8 && Math.abs(this.owner.position.y - shroom[0]) <= 8) {
+            shroomManagerCmp.pickShroom(index);
+            this.takenShrooms++;
+          }
+        }
+      })
+
+    if(this.takenShrooms) {
+      if(Math.abs(this.owner.position.x - this.playerConstants.start_x) <= 30 &&
+      Math.abs(this.owner.position.y - this.playerConstants.start_y)    <= 30) {
+        this.score += this.takenShrooms;
+          this.writeToScore();
+          this.takenShrooms = 0;
+      }
+    }
+
+
+    SPECIAL_SHROOM_VALID_COORDS.forEach((shroom, index) => {
+      if (shroomManagerCmp.specialShroomVector[index]) {
+        if(Math.abs(this.owner.position.x - shroom[1]) <= 8 && Math.abs(this.owner.position.y - shroom[0]) <= 8) {
+          shroomManagerCmp.pickSpecialShroom(index);
+          this.score += SPECIAL_SHROOM_BONUS;
+          this.writeToScore();
+        }
+      }
+    })
+
+  }
+
+  writeToScore() {
+    let name = "p";
+    if(this.playerID == 0) name += "1";
+    else if(this.playerID == 1) name += "2";
+    name += "_score";
+    let s = this.scene.findObjectByName(name);
+    s.asText().text = this.score.toString();
+
+    if(this.playerID == 0) this.GS.setScore1(this.score);
+    else if(this.playerID == 1) this.GS.setScore2(this.score);
   }
 
   moveLeft(units: number) {

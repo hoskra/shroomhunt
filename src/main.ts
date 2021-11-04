@@ -3,6 +3,7 @@ import { GameStatus } from './game-components/game-status';
 import { Assets } from './constants/enum';
 import { WINDOW_WIDTH, WINDOW_HEIGHT } from './constants/game-constants';
 import { Factory } from './factory';
+import { ShroomManager } from './game-components/shroomManager';
 
 class ShroomHunt {
 	engine: ECS.Engine;
@@ -49,7 +50,9 @@ class ShroomHunt {
 		scene.addGlobalComponent(new ECS.KeyInputComponent);
 
 		this.engine.scene.stage.addComponentAndRun(new GameStatus());
+		this.engine.scene.stage.addComponentAndRun(new ShroomManager());
 		this.engine.scene.stage.addComponentAndRun(new Factory(scene));
+
 	}
 }
 

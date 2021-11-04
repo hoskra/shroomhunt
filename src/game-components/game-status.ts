@@ -7,11 +7,26 @@ export class GameStatus extends ECS.Component {
   time: number;
   stateId: number;
   multiplayer: boolean;
+  player1_score: number;
+  player2_score: number;
 
   constructor() {
     super();
     this.stateId = GameStates.WELCOME_SCREEN;
+    this.player1_score = 0;
+    this.player2_score = 0;
   }
+
+  setScore1(num: number) {
+    this.player1_score = num;
+  }
+
+  setScore2(num: number) {
+    this.player2_score = num;
+  }
+
+  getScore1() { return this.player1_score; }
+  getScore2() { return this.player2_score; }
 
   getStateId() {
     return this.stateId;
@@ -46,10 +61,6 @@ export class GameStatus extends ECS.Component {
         console.log("Game restarting.")
         break;
     }
-  }
-
-  onUpdate(delta: number, absolute: number) {
-
   }
 
 }
