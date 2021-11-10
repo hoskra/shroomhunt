@@ -4,8 +4,8 @@ import { GameStates, Messages } from './constants/enum';
 import { GameStatus } from './game-components/game-status';
 import { ShroomManager } from './game-components/shroomManager';
 import { WaitInputComponent } from './game-components/wait-input-component';
+import { WaitInputRestart } from './game-components/wait-input-restart';
 export class Factory extends ECS.Component {
-
 	scene : ECS.Scene;
 	multiplayer: boolean;
 	previous: number;
@@ -16,14 +16,21 @@ export class Factory extends ECS.Component {
 		super();
 		this.scene = scene;
 		this.multiplayer = false;
+		this.GS = this.scene.findGlobalComponentByName<GameStatus>(GameStatus.name);
 
-		Builders.welcomeScreenBuilder(scene);
+		this.newGame();
+	}
+
+	newGame() {
+		this.scene.stage.destroyChildren();
+		this.sendMessage(Messages.GAME_PAUSE, {} );
+
+		Builders.welcomeScreenBuilder(this.scene);
 
 		this.scene.addGlobalComponentAndRun(new ECS.ChainComponent()
 			.waitFor(() => new WaitInputComponent())
 			.mergeWith(this.loadGame()));
 	}
-
 
 	loadGame() {
 		return new ECS.ChainComponent()
@@ -38,34 +45,36 @@ export class Factory extends ECS.Component {
 			this.SM.growShrooms(this.scene);
 			this.SM.growSpecialShrooms(this.scene);
 
-
 			Builders.monsterBuilder(this.scene);
 			Builders.playersBuilder(this.scene);
-
 			Builders.scoreBuilder(this.scene);
 
+			this.sendMessage(Messages.GAME_RUNNING, {} );
 		});
 	}
 
-	onInit() {
-		this.GS = this.scene.findGlobalComponentByName<GameStatus>(GameStatus.name);
-	}
+  restartGame() {
+		this.sendMessage(Messages.GAME_PAUSE, {} );
+    this.scene.stage.destroyChildren();
 
-	setMultiplayer(multiplayer: boolean) {
-		this.multiplayer = multiplayer;
+		// display score
+		if(this.GS.isMultiplayer()) {
+			Builders.finishScreenBuild(this.scene, this.GS.getScore1(), this.GS.getScore2());
+		} else {
+			Builders.finishScreenBuild(this.scene, this.GS.getScore1());
+		}
+
+		this.scene.addGlobalComponentAndRun(new ECS.ChainComponent()
+		.waitFor(() => new WaitInputRestart())
+		.mergeWith(new ECS.ChainComponent()
+		.call(() => {
+			this.newGame();
+		})));
 	}
 
 	onUpdate() {
-
 		if (this.GS.getStateId() == GameStates.FINISH) {
-			this.sendMessage(Messages.GAME_PAUSE, {} );
-
-			if(this.multiplayer) {
-				Builders.finishScreenBuild(this.scene, this.GS.getScore1(), this.GS.getScore2());
-			} else {
-				Builders.finishScreenBuild(this.scene, this.GS.getScore1());
-			}
-
+			this.restartGame();
 		}
 	}
 }

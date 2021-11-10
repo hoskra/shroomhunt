@@ -14,14 +14,15 @@ export enum Assets {
 
 export enum GameStates {
   WELCOME_SCREEN = 0,
-  START   = 1,
+  RUNNING   = 1,
   PAUSE   = 2,
   FINISH  = 3,
   RESTART = 4,
 }
 
 export enum Messages {
-  GAME_START = "GAME_START",
+  WELCOME_SCREEN = "WELCOME_SCREEN",
+  GAME_RUNNING = "GAME_RUNNING",
   GAME_PAUSE = "GAME_PAUSE",
   GAME_FINISH = "GAME_FINISH",
   GAME_RESTART = "GAME_RESTART",

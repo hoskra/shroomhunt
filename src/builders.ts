@@ -47,13 +47,15 @@ export class Builders {
 
   static welcomeScreenBuilder = (scene: ECS.Scene) => {
     let center = WINDOW_WIDTH*0.1;
-    this.textBuilder(scene, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.3, "Shroomhunt", 60, "Shroomhunt");
+    this.textBuilder(scene, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.2, "Shroomhunt", 70, "Shroomhunt");
     this.textBuilder(scene, WINDOW_WIDTH * 0.5 - center, WINDOW_HEIGHT * 0.5, "1 player ", 40, "1p");
     this.simpleBuilder(scene,  WINDOW_WIDTH * 0.8 - center, WINDOW_HEIGHT * 0.5, 0.5, 0.6, Assets.PLAYER1)
     this.textBuilder(scene, WINDOW_WIDTH * 0.5 - center, WINDOW_HEIGHT * 0.6, "2 players", 40, "2p");
     this.simpleBuilder(scene,  WINDOW_WIDTH * 0.75 - center, WINDOW_HEIGHT * 0.6, 0.5, 0.6, Assets.PLAYER1)
     this.simpleBuilder(scene,  WINDOW_WIDTH * 0.85 - center, WINDOW_HEIGHT * 0.6, 0.5, 0.6, Assets.PLAYER2)
     this.textBuilder(scene, WINDOW_WIDTH * 0.35 - center, WINDOW_HEIGHT * 0.5, ">", 40, "selection");
+
+    this.textBuilder(scene, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.9, ".. press enter to start the game ..", 30, "note");
   }
 
   static finishScreenBuild = (scene: ECS.Scene, score1: number, score2: number = -1) => {
@@ -66,7 +68,7 @@ export class Builders {
     scene.stage.addChild(graphics);
 
     if(score2 == -1) {
-      this.textBuilder(scene, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.3, "Game over!", 60, "gameover");
+      this.textBuilder(scene, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.2, "New high score!", 70, "gameover");
       this.textBuilder(scene, WINDOW_WIDTH * 0.4, WINDOW_HEIGHT * 0.5, "Player 1 score: " + score1, 40, "1p");
       this.simpleBuilder(scene,  WINDOW_WIDTH * 0.8, WINDOW_HEIGHT * 0.5, 0.5, 0.6, Assets.PLAYER1)
 
@@ -81,6 +83,9 @@ export class Builders {
       this.textBuilder(scene, WINDOW_WIDTH * 0.4, WINDOW_HEIGHT * 0.6, "Player 2 score: " + score2, 40, "2p");
       this.simpleBuilder(scene,  WINDOW_WIDTH * 0.75, WINDOW_HEIGHT * 0.6, 0.5, 0.6, Assets.PLAYER2)
     }
+
+    this.textBuilder(scene, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.9, ".. press enter to continue ..", 30, "note");
+
   }
 
   static basketsBuilder(scene: ECS.Scene) {
