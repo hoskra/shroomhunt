@@ -1,7 +1,10 @@
 import * as ECS from '../../libs/pixi-ecs';
+import { ComponentState } from '../../libs/pixi-ecs/engine/component';
+import { Messages } from '../constants/enum';
 import { MAXIMUM_CARRY, SPECIAL_SHROOM_BONUS, WINDOW_HEIGHT, WINDOW_WIDTH } from '../constants/game-constants';
 import { CAVES, COORDS_PLATFORM, SHROOM_VALID_COORDS, SPECIAL_SHROOM_VALID_COORDS } from '../constants/map-coordinates';
 import { GameStatus } from './game-status';
+import { Monster } from './monster';
 import { ShroomManager } from './shroom-manager';
 import { SoundComponent } from './sound-component';
 
@@ -47,6 +50,7 @@ export class Player extends ECS.Component {
   }
 
   onUpdate(delta: number, absolute: number) {
+    // this.checkIfDead();
 
     if(this.KC.isKeyPressed(this.playerConstants.left_code))  { this.moveLeft (delta * 0.25); }
     if(this.KC.isKeyPressed(this.playerConstants.right_code)) { this.moveRight(delta * 0.25); }
@@ -60,6 +64,13 @@ export class Player extends ECS.Component {
     this.processYellowShroomCollision();
     this.processBasketInteraction();
     this.processRedShroomCollision();
+  }
+
+  checkIfDead() {
+    if(this.health <= 0 ) {
+      this.finish();
+      return;
+    }
   }
 
   writeToScore() {
@@ -104,9 +115,38 @@ export class Player extends ECS.Component {
           this.owner.position.x = CAVES[pair].x;
           this.owner.position.y = CAVES[pair].y;
           this.entering = 20;
+
+          let monster =this.GS.getMonsterPosition();
+          if(monster == parseInt(key) || monster == parseInt(pair)) {
+            this.beBitten();
+          }
           return;
         }
       }
+    }
+  }
+
+  beBitten() {
+    this.health--;
+    this.SC.playMonster();
+    let name = "p";
+    if(this.playerID == 0) name += "1";
+    else if(this.playerID == 1) name += "2";
+    name += "_health";
+    let s = this.scene.findObjectByName(name);
+    s.asText().text = this.health.toString();
+
+    // if(this.health == 0) this.die();
+  }
+
+  die() {
+    if(this.playerID == 0) {
+      this.finish();
+      this.sendMessage(Messages.PLAYER_1_DEAD);
+    }
+    else {
+      this.finish();
+      this.sendMessage(Messages.PLAYER_2_DEAD);
     }
   }
 
@@ -153,6 +193,10 @@ export class Player extends ECS.Component {
   processCaveEntering() {
     if(this.entering) {
       this.entering --;
+
+      this.owner.pixiObj.filters = [
+        new PIXI.filters.AlphaFilter(1 - (this.entering/20))
+      ];
     }
   }
 
@@ -186,5 +230,4 @@ export class Player extends ECS.Component {
       }
     }
   }
-
 }

@@ -8,3 +8,10 @@ export const SpritesheetInfo = {
   "shroom" : { x: 199, y: 1, width: 32, height: 32 },
   "special_shroom" : { x: 165, y: 133, width: 32, height: 32 }
 }
+
+export const SoundInfo = {
+  "pickYellow" : './assets/slime1.wav',
+  "pickRed" : './assets/slime2.wav',
+  "basket" : './assets/interface2.wav',
+  "monster" : './assets/mnstr6.wav',
+}

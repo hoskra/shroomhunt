@@ -1,22 +1,23 @@
 import * as ECS from '../libs/pixi-ecs';
 import { Component } from '../libs/pixi-ecs';
-import { Assets, Colors, Tags } from './constants/enum';
-import { WINDOW_HEIGHT, WINDOW_WIDTH, SHROOM_CNT, SPECIAL_SHROOM_CNT } from './constants/game-constants';
-import { CAVES, COORDS_PLATFORM, SHROOM_VALID_COORDS, SPECIAL_SHROOM_VALID_COORDS } from './constants/map-coordinates';
+import { Assets, Colors } from './constants/enum';
+import { WINDOW_HEIGHT, WINDOW_WIDTH } from './constants/game-constants';
+import { CAVES, COORDS_PLATFORM } from './constants/map-coordinates';
 import { player1_constants, player2_constants } from './constants/player-constants';
 import { GameStatus } from './game-components/game-status';
+import { Monster } from './game-components/monster';
 import { Player } from './game-components/player';
+import { ShroomManager } from './game-components/shroom-manager';
 
 import { TimeCounter } from './game-components/time-counter'
 
-function shuffle(array) {
-	for (let i = array.length - 1; i > 0; i--) {
-		let j = Math.floor(Math.random() * (i + 1));
-		[array[i], array[j]] = [array[j], array[i]];
-	}
-}
-
 export class Builders {
+
+  static shroomsBuilder(scene: ECS.Scene) {
+    const SM = scene.findGlobalComponentByName<ShroomManager>(ShroomManager.name);
+    SM.growShrooms(scene);
+    SM.growSpecialShrooms(scene);
+  }
 
   static textBuilder = (scene: ECS.Scene, x: number, y: number, text: string, fontSize: number, name: string = text) => {
     new ECS.Builder(scene.stage)
@@ -58,7 +59,11 @@ export class Builders {
     this.textBuilder(scene, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.9, ".. press enter to start the game ..", 30, "note");
   }
 
-  static finishScreenBuild = (scene: ECS.Scene, score1: number, score2: number = -1) => {
+  static displayScore = (scene: ECS.Scene) => {
+		const GS = scene.findGlobalComponentByName<GameStatus>(GameStatus.name);
+    let score1 = GS.getScore1();
+    let score2 = GS.getScore2();
+
     const graphics = new PIXI.Graphics();
 
     graphics.beginFill(0x000000);
@@ -67,7 +72,7 @@ export class Builders {
 
     scene.stage.addChild(graphics);
 
-    if(score2 == -1) {
+    if(!GS.isMultiplayer()) {
       this.textBuilder(scene, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.2, "New high score!", 70, "gameover");
       this.textBuilder(scene, WINDOW_WIDTH * 0.4, WINDOW_HEIGHT * 0.5, "Player 1 score: " + score1, 40, "1p");
       this.simpleBuilder(scene,  WINDOW_WIDTH * 0.8, WINDOW_HEIGHT * 0.5, 0.5, 0.6, Assets.PLAYER1)
@@ -76,6 +81,7 @@ export class Builders {
 
       let message = "Player 1 wins!";
       if(score1 < score2) message = "Player 2 wins!";
+      else if(score1 == score2) message = "It's a tie!";
 
       this.textBuilder(scene, WINDOW_WIDTH * 0.5, WINDOW_HEIGHT * 0.3, message, 60, "gameover");
       this.textBuilder(scene, WINDOW_WIDTH * 0.4, WINDOW_HEIGHT * 0.5, "Player 1 score: " + score1, 40, "1p");
@@ -196,12 +202,11 @@ export class Builders {
   }
 
   static monsterBuilder(scene: ECS.Scene) {
-    let monster = Math.floor(Math.random() * (Object.keys(CAVES).length));
 
     new ECS.Builder(scene)
-    .localPos(CAVES[monster].x, CAVES[monster].y)
     .anchor(0.5, 1)
     .asSprite(PIXI.Texture.from(Assets.MONSTER))
+    .withComponent(new Monster())
     .withParent(scene.stage)
     .build();
   }

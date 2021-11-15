@@ -2,10 +2,7 @@ import * as ECS from '../../libs/pixi-ecs';
 import { TIME_LIMIT } from '../constants/game-constants';
 import { Messages } from '../constants/enum';
 import { GameStates } from '../constants/enum';
-import { Builders } from '../builders';
 import { Factory } from '../factory';
-import { WaitInputRestart } from './wait-input-restart';
-import { WaitInputComponent } from './wait-input-component';
 export class GameStatus extends ECS.Component {
 
   time: number;
@@ -13,12 +10,19 @@ export class GameStatus extends ECS.Component {
   multiplayer: boolean;
   player1_score: number;
   player2_score: number;
+  caveWithMonster: number = -1;
+  player1_alive: boolean = true;
+  player2_alive: boolean = true;
 
   constructor() {
     super();
     this.stateId = GameStates.WELCOME_SCREEN;
     this.player1_score = 0;
     this.player2_score = 0;
+  }
+
+  getMonsterPosition() {
+    return this.caveWithMonster;
   }
 
   setScore1(num: number) {
@@ -46,7 +50,9 @@ export class GameStatus extends ECS.Component {
 
   onInit() {
     this.time = TIME_LIMIT;
-    this.subscribe(Messages.GAME_RUNNING, Messages.GAME_PAUSE, Messages.GAME_FINISH, Messages.GAME_RESTART);
+    this.subscribe(Messages.GAME_RUNNING, Messages.GAME_PAUSE, Messages.GAME_FINISH, Messages.GAME_RESTART,
+      Messages.MONSTER_POSITION,
+      Messages.PLAYER_1_DEAD, Messages.PLAYER_2_DEAD);
   }
 
   onMessage(msg: ECS.Message) {
@@ -66,61 +72,34 @@ export class GameStatus extends ECS.Component {
       case Messages.GAME_FINISH:
         this.stateId = GameStates.FINISH;
         console.log("Game finished.")
-        // this.restartGame();
+        const factory = this.scene.findGlobalComponentByName<Factory>(Factory.name);
+        factory.restartGame();
         break;
       case Messages.GAME_RESTART:
         this.stateId = GameStates.RESTART;
         this.time = TIME_LIMIT;
         console.log("Game restarting.")
         break;
+      case Messages.MONSTER_POSITION:
+        this.caveWithMonster = msg.data;
+        break;
+      case Messages.PLAYER_1_DEAD:
+        this.player1_alive = false;
+        break;
+      case Messages.PLAYER_2_DEAD:
+        this.player2_alive = false;
+        break;
     }
   }
 
-  restartGame() {
-    const factory = this.scene.findGlobalComponentByName<Factory>(Factory.name);
-
-
-		this.sendMessage(Messages.GAME_RESTART, {} );
-
-    this.scene.stage.destroyChildren();
-
-    // display score
-		if(this.multiplayer) {
-			Builders.finishScreenBuild(this.scene, this.getScore1(), this.getScore2());
-		} else {
-			Builders.finishScreenBuild(this.scene, this.getScore1());
-		}
-
-		// // wait for user input
-		this.scene.addGlobalComponentAndRun(new ECS.ChainComponent()
-			.waitFor(() => new WaitInputRestart())
-			.mergeWith(factory.welcomeScreen()));
-
-		// // clear scene
-
-
-		// // pick mode and load game
-		// this.scene.addGlobalComponentAndRun(new ECS.ChainComponent()
-		// 	.waitFor(() => new WaitInputComponent())
-		// 	.mergeWith(factory.loadGame()));
-
-		// this.sendMessage(Messages.GAME_RUNNING, {} );
-
-		// Builders.welcomeScreenBuilder(this.scene);
+  onUpdate() {
+    if (this.stateId === GameStates.RUNNING) {
+      if(!this.player1_alive && this.getScore2() > this.getScore1()) {
+        this.stateId = GameStates.FINISH;
+      } else if (!this.player2_alive && this.getScore1() > this.getScore2()) {
+        this.stateId = GameStates.FINISH;
+      }
+    }
   }
 
-  // onUpdate() {
-  //   const keyInputCmp = this.scene.findGlobalComponentByName<ECS.KeyInputComponent>(ECS.KeyInputComponent.name);
-
-  //   if(this.stateId == GameStates.FINISH)
-  //     if(keyInputCmp.isKeyPressed(ECS.Keys.KEY_ENTER) || keyInputCmp.isKeyPressed(ECS.Keys.KEY_SPACE)) {
-  //       keyInputCmp.handleKey(ECS.Keys.KEY_ENTER);
-  //       keyInputCmp.handleKey(ECS.Keys.KEY_SPACE);
-
-  //       this.stateId = GameStates.RESTART;
-  //       const factory = this.scene.findGlobalComponentByName<Factory>(Factory.name);
-  //       factory.restartGame();
-  //     }
-
-  //   }
 }

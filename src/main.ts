@@ -5,8 +5,6 @@ import { WINDOW_WIDTH, WINDOW_HEIGHT } from './constants/game-constants';
 import { Factory } from './factory';
 import { ShroomManager } from './game-components/shroom-manager';
 import { SoundComponent } from './game-components/sound-component';
-import generateCaves from './constants/generate-constants';
-import sound from 'pixi-sound'
 
 class ShroomHunt {
 	engine: ECS.Engine;
@@ -48,10 +46,6 @@ class ShroomHunt {
 			.load(() => this.onAssetsLoaded());
 
 			const SC = new SoundComponent();
-			SC.pickYellow = sound.Sound.from('./assets/slime1.wav');
-			SC.pickRed = sound.Sound.from('./assets/slime2.wav');
-			SC.basket = sound.Sound.from('./assets/interface2.wav');
-			SC.monster = sound.Sound.from('./assets/mstr6.wav');
 			this.engine.scene.stage.addComponentAndRun(SC);
 	}
 
