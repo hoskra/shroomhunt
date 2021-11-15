@@ -7,9 +7,13 @@ export class WaitInputComponent extends ECS.Component {
 	keyCmp: ECS.KeyInputComponent;
 	GS: GameStatus;
 
-	onUpdate() {
-    this.keyCmp = this.scene.findGlobalComponentByName<ECS.KeyInputComponent>(ECS.KeyInputComponent.name);
+  onInit() {
     this.GS = this.scene.findGlobalComponentByName<GameStatus>(GameStatus.name);
+    this.GS.setMultiplayer(false);
+  }
+
+  onUpdate() {
+    this.keyCmp = this.scene.findGlobalComponentByName<ECS.KeyInputComponent>(ECS.KeyInputComponent.name);
 
     if(this.keyCmp) {
       if(this.keyCmp.isKeyPressed(ECS.Keys.KEY_UP)) {
