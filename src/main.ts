@@ -51,7 +51,7 @@ class ShroomHunt {
 			SC.pickYellow = sound.Sound.from('./assets/slime1.wav');
 			SC.pickRed = sound.Sound.from('./assets/slime2.wav');
 			SC.basket = sound.Sound.from('./assets/interface2.wav');
-			SC.monster = sound.Sound.from('./assets/giant3.wav');
+			SC.monster = sound.Sound.from('./assets/mstr6.wav');
 			this.engine.scene.stage.addComponentAndRun(SC);
 	}
 
@@ -62,9 +62,6 @@ class ShroomHunt {
 		this.engine.scene.stage.addComponentAndRun(new GameStatus());
 		this.engine.scene.stage.addComponentAndRun(new ShroomManager());
 		this.engine.scene.stage.addComponentAndRun(new Factory(scene));
-
-
-		console.log(generateCaves());
 
 	}
 }
