@@ -3,7 +3,10 @@ import { GameStatus } from './game-components/game-status';
 import { Assets } from './constants/enum';
 import { WINDOW_WIDTH, WINDOW_HEIGHT } from './constants/game-constants';
 import { Factory } from './factory';
-import { ShroomManager } from './game-components/shroomManager';
+import { ShroomManager } from './game-components/shroom-manager';
+import { SoundComponent } from './game-components/sound-component';
+import generateCaves from './constants/generate-constants';
+import sound from 'pixi-sound'
 
 class ShroomHunt {
 	engine: ECS.Engine;
@@ -43,6 +46,13 @@ class ShroomHunt {
 			.add(Assets.MUSHROOM, './assets/mushroom.png')
 			.add(Assets.HEART, './assets/hearts.png')
 			.load(() => this.onAssetsLoaded());
+
+			const SC = new SoundComponent();
+			SC.pickYellow = sound.Sound.from('./assets/slime1.wav');
+			SC.pickRed = sound.Sound.from('./assets/slime2.wav');
+			SC.basket = sound.Sound.from('./assets/interface2.wav');
+			SC.monster = sound.Sound.from('./assets/giant3.wav');
+			this.engine.scene.stage.addComponentAndRun(SC);
 	}
 
 	onAssetsLoaded() {
@@ -52,6 +62,9 @@ class ShroomHunt {
 		this.engine.scene.stage.addComponentAndRun(new GameStatus());
 		this.engine.scene.stage.addComponentAndRun(new ShroomManager());
 		this.engine.scene.stage.addComponentAndRun(new Factory(scene));
+
+
+		console.log(generateCaves());
 
 	}
 }

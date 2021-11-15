@@ -2,6 +2,7 @@ import * as ECS from '../../libs/pixi-ecs';
 import { Assets, Tags } from '../constants/enum';
 import { SHROOM_CNT, SPECIAL_SHROOM_CNT } from '../constants/game-constants';
 import { SHROOM_VALID_COORDS, SPECIAL_SHROOM_VALID_COORDS } from '../constants/map-coordinates';
+import { SoundComponent } from './sound-component';
 
 function shuffle(array) {
 	for (let i = array.length - 1; i > 0; i--) {
@@ -17,10 +18,16 @@ export class ShroomManager extends ECS.Component {
   public shroomVector: boolean[];
   public specialShroomVector: boolean[];
 
+  SC: SoundComponent;
+
   constructor() {
     super();
     this.shroomCnt = SHROOM_CNT;
     this.specialShroomCnt = SPECIAL_SHROOM_CNT;
+  }
+
+  onInit() {
+    this.SC = this.scene.findGlobalComponentByName<SoundComponent>(SoundComponent.name);
   }
 
   growShrooms(scene: ECS.Scene) {
@@ -62,6 +69,8 @@ export class ShroomManager extends ECS.Component {
   }
 
   pickShroom(index: number) {
+    this.SC.playPickYellow();
+
     this.shroomVector[index] = false;
     let s = this.scene.findObjectByName("shroom" + index);
     if(s) {
@@ -72,6 +81,8 @@ export class ShroomManager extends ECS.Component {
   }
 
   pickSpecialShroom(index: number) {
+    this.SC.playPickRed();
+
     this.specialShroomVector[index] = false;
     let s = this.scene.findObjectByName("special_shroom" + index);
     if(s) {

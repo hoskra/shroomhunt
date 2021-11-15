@@ -2,7 +2,7 @@ import * as ECS from '../libs/pixi-ecs';
 import { Builders } from './builders';
 import { GameStates, Messages } from './constants/enum';
 import { GameStatus } from './game-components/game-status';
-import { ShroomManager } from './game-components/shroomManager';
+import { ShroomManager } from './game-components/shroom-manager';
 import { WaitInputComponent } from './game-components/wait-input-component';
 import { WaitInputRestart } from './game-components/wait-input-restart';
 export class Factory extends ECS.Component {
