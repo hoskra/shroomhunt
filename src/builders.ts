@@ -6,12 +6,39 @@ import { CAVES, COORDS_PLATFORM } from './constants/map-coordinates';
 import { player1_constants, player2_constants } from './constants/player-constants';
 import { GameStatus } from './game-components/game-status';
 import { Monster } from './game-components/monster';
+import { MuteButton } from './game-components/mute-button';
 import { Player } from './game-components/player';
 import { ShroomManager } from './game-components/shroom-manager';
 
 import { TimeCounter } from './game-components/time-counter'
 
 export class Builders {
+
+  static muteButtonBuilder(scene: ECS.Scene) {
+    let soundOff = new ECS.Builder(scene.stage)
+      .localPos(WINDOW_WIDTH*0.97, WINDOW_HEIGHT*0.03)
+      .anchor(0.5)
+      .withComponent(new MuteButton())
+      .withName("soundOff")
+      .withParent(scene.stage)
+      .asSprite(PIXI.Texture.from(Assets.SOUND_OFF))
+      .build();
+      soundOff.scale.x = 0.11;
+      soundOff.scale.y = 0.11;
+      soundOff.alpha = 1;
+
+    let soundOn = new ECS.Builder(scene.stage)
+      .localPos(WINDOW_WIDTH*0.97, WINDOW_HEIGHT*0.03)
+      .anchor(0.5)
+      .withName("soundOn")
+      .withParent(scene.stage)
+      .asSprite(PIXI.Texture.from(Assets.SOUND_ON))
+      .build();
+
+    soundOn.scale.x = 0.11;
+    soundOn.scale.y = 0.11;
+    soundOn.alpha = 0;
+  }
 
   static shroomsBuilder(scene: ECS.Scene) {
     const SM = scene.findGlobalComponentByName<ShroomManager>(ShroomManager.name);
@@ -44,6 +71,13 @@ export class Builders {
     .withComponent(cmp)
     .withName(name)
     .withParent(scene.stage).build();
+
+  new ECS.Builder(scene.stage)
+    .anchor(0.5)
+    .withName("collected_" + name)
+    .withParent(scene.stage)
+    .asText("0", new PIXI.TextStyle({ fill: '#ffffff', fontSize: 30, fontFamily: 'Courier New' }))
+    .build();
   }
 
   static welcomeScreenBuilder = (scene: ECS.Scene) => {
@@ -165,16 +199,16 @@ export class Builders {
       .scale(0.7)
       .build();
 
-    x += 150;
+    // x += 150;
 
-    this.textBuilder(scene, x, y, "3", 35, healthName);
-    new ECS.Builder(scene)
-      .localPos(x + heart_offset, y)
-      .anchor(0.5)
-      .asSprite(PIXI.Texture.from(Assets.HEART))
-      .withParent(scene.stage)
-      .scale(0.7)
-      .build();
+    // this.textBuilder(scene, x, y, "3", 35, healthName);
+    // new ECS.Builder(scene)
+    //   .localPos(x + heart_offset, y)
+    //   .anchor(0.5)
+    //   .asSprite(PIXI.Texture.from(Assets.HEART))
+    //   .withParent(scene.stage)
+    //   .scale(0.7)
+    //   .build();
   }
 
   static scoreBuilder(scene: ECS.Scene) {
@@ -192,11 +226,11 @@ export class Builders {
       .withComponent(new TimeCounter())
       .build();
 
-    this.playerStats(scene, f*7, y, "p1_score", "p1_health");
+    this.playerStats(scene, f*8, y, "p1_score", "p1_health");
 
 
     if(GS.isMultiplayer()) {
-      this.playerStats(scene, f, y, "p2_score", "p2_health");
+      this.playerStats(scene, f*2, y, "p2_score", "p2_health");
     }
 
   }

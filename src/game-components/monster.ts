@@ -29,9 +29,11 @@ export class Monster extends ECS.Component {
     if (this.currentTime > this.duration) {
         this.pickRandomLocation();
     } else {
-      // this.owner.pixiObj.filters = [
-      //     new PIXI.filters.AlphaFilter(1 - (this.currentTime/this.duration))
-      // ];
+      let x = this.duration / this.currentTime;
+      let fade = x === 1 ? 1 : 1 - Math.pow(2, -10 * x);;
+      this.owner.pixiObj.filters = [
+        new PIXI.filters.AlphaFilter(fade)
+      ];
     }
   }
 }

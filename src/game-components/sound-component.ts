@@ -2,12 +2,14 @@ import * as ECS from '../../libs/pixi-ecs';
 import sound from 'pixi-sound'
 
 import { SoundInfo } from '../constants/asset-info';
+import { BACKGROUND_VOLUME } from '../constants/game-constants';
 export class SoundComponent extends ECS.Component {
 
   public pickYellow: any;
   public pickRed: any;
   public basket: any;
   public monster: any;
+  public background: any;
 
   constructor() {
     super();
@@ -18,6 +20,7 @@ export class SoundComponent extends ECS.Component {
     this.pickRed = sound.Sound.from(SoundInfo.pickRed);
     this.basket = sound.Sound.from(SoundInfo.basket);
     this.monster = sound.Sound.from(SoundInfo.monster);
+    this.background = sound.Sound.from(SoundInfo.background);
   }
 
   playPickYellow() {
@@ -36,4 +39,19 @@ export class SoundComponent extends ECS.Component {
     this.monster.play();
   }
 
+  playBackgroundMusic() {
+    this.background.play({
+      loop: true,
+      volume: BACKGROUND_VOLUME
+    });
+  }
+  resumeBackgroundMusic() {
+    this.background.resume();
+  }
+  pauseBackgroundMusic() {
+    this.background.pause();
+  }
+  isPlaying() {
+    return this.background.isPlaying;
+  }
 }

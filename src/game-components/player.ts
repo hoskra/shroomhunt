@@ -64,6 +64,14 @@ export class Player extends ECS.Component {
     this.processYellowShroomCollision();
     this.processBasketInteraction();
     this.processRedShroomCollision();
+
+  }
+
+  shroomCnt() {
+    let x = this.scene.findObjectByName('collected_player' + (this.playerID+1));
+    x.asText().text = this.takenShrooms.toString();
+    x.position.x = this.owner.position.x + 5;
+    x.position.y = this.owner.position.y - 75;
   }
 
   checkIfDead() {
@@ -86,6 +94,7 @@ export class Player extends ECS.Component {
   }
 
   moveLeft(units: number) {
+    this.shroomCnt();
     if(this.entering == 0 && this.owner.position.x > this.offset) {
       if(!this.previousDirectionLeft) this.owner.scale.x *= -1;
       this.previousDirectionLeft = true;
@@ -94,6 +103,7 @@ export class Player extends ECS.Component {
   }
 
   moveRight(units: number) {
+    this.shroomCnt();
     if(this.entering == 0 && this.owner.position.x < WINDOW_WIDTH - this.offset) {
       if(this.previousDirectionLeft) this.owner.scale.x *= -1;
       this.previousDirectionLeft = false;
@@ -102,12 +112,14 @@ export class Player extends ECS.Component {
   }
 
   jump() {
+    this.shroomCnt();
     if(this.entering == 0 && this.jumping == 0 && this.isStandingOnPlatform ) {
       this.jumping = 20;
     }
   }
 
   enterCave(absolute: number) {
+    this.shroomCnt();
     if(this.entering == 0) {
       for (let key of Object.keys(CAVES)) {
         if ( Math.abs(this.owner.position.x - CAVES[key].x) < 50 &&  Math.abs(this.owner.position.y - CAVES[key].y) < 10) {
@@ -130,13 +142,15 @@ export class Player extends ECS.Component {
     this.health--;
     this.SC.playMonster();
     let name = "p";
-    if(this.playerID == 0) name += "1";
-    else if(this.playerID == 1) name += "2";
-    name += "_health";
-    let s = this.scene.findObjectByName(name);
-    s.asText().text = this.health.toString();
+    // if(this.playerID == 0) name += "1";
+    // else if(this.playerID == 1) name += "2";
+    // name += "_health";
+    // let s = this.scene.findObjectByName(name);
+    // s.asText().text = this.health.toString();
 
-    // if(this.health == 0) this.die();
+    let x = this.scene.findObjectByName('collected_player' + (this.playerID+1));
+    this.takenShrooms = 0;
+    x.asText().text = this.takenShrooms.toString();
   }
 
   die() {
@@ -163,6 +177,7 @@ export class Player extends ECS.Component {
   }
 
   gravity() {
+    this.shroomCnt();
     let standingOnPlatform = -1;
     COORDS_PLATFORM.forEach((platform, index) => {
       if(Math.abs(this.owner.y - platform[1]) <= 3) {

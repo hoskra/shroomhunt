@@ -9,7 +9,9 @@ export enum Assets {
 	SHROOM = 'shroom',
 	SPECIAL_SHROOM = 'special_shroom',
 	MUSHROOM = 'mushroom',
-	HEART = 'heart'
+	HEART = 'heart',
+  SOUND_ON = 'sound_on',
+  SOUND_OFF = 'sound_off'
 }
 
 export enum GameStates {

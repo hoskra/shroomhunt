@@ -1,10 +1,14 @@
 import * as ECS from '../libs/pixi-ecs';
-import { GameStatus } from './game-components/game-status';
+import { Ticker } from 'pixi.js';
+import { addStats, Stats } from 'pixi-stats';
+
+import { WINDOW_WIDTH, WINDOW_HEIGHT, DEBUG_STATS } from './constants/game-constants';
 import { Assets } from './constants/enum';
-import { WINDOW_WIDTH, WINDOW_HEIGHT } from './constants/game-constants';
+import { GameStatus } from './game-components/game-status';
 import { Factory } from './factory';
 import { ShroomManager } from './game-components/shroom-manager';
 import { SoundComponent } from './game-components/sound-component';
+import { PointerInputComponentProps } from '../libs/pixi-ecs/components/pointer-input-component';
 
 class ShroomHunt {
 	engine: ECS.Engine;
@@ -43,6 +47,9 @@ class ShroomHunt {
 			.add(Assets.SPECIAL_SHROOM, './assets/special_shroom.gif')
 			.add(Assets.MUSHROOM, './assets/mushroom.png')
 			.add(Assets.HEART, './assets/hearts.png')
+			.add(Assets.SOUND_ON, './assets/sound_on.png')
+			.add(Assets.SOUND_OFF, './assets/sound_off.png')
+
 			.load(() => this.onAssetsLoaded());
 
 			const SC = new SoundComponent();
@@ -50,8 +57,18 @@ class ShroomHunt {
 	}
 
 	onAssetsLoaded() {
+
+		if(DEBUG_STATS) {
+			const stats: Stats = addStats(document, this);
+			const ticker: Ticker = Ticker.shared;
+			ticker.add(stats.update, stats);
+		}
+
+
 		let scene = this.engine.scene;
 		scene.addGlobalComponent(new ECS.KeyInputComponent);
+		// scene.addGlobalComponent(new ECS.PointerInputComponent(new PointerInputComponentProps()))
+
 
 		this.engine.scene.stage.addComponentAndRun(new GameStatus());
 		this.engine.scene.stage.addComponentAndRun(new ShroomManager());
