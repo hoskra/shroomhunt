@@ -1,4 +1,4 @@
-export const TIME_LIMIT           : number = 600;
+export const TIME_LIMIT           : number = 60;
 
 export const WINDOW_WIDTH         : number = 960;
 export const WINDOW_HEIGHT        : number = 720;
