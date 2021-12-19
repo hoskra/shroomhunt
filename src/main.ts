@@ -67,7 +67,7 @@ class ShroomHunt {
 
 		let scene = this.engine.scene;
 		scene.addGlobalComponent(new ECS.KeyInputComponent);
-		// scene.addGlobalComponent(new ECS.PointerInputComponent(new PointerInputComponentProps()))
+		scene.addGlobalComponent(new ECS.PointerInputComponent(<PointerInputComponentProps>{}))
 
 
 		this.engine.scene.stage.addComponentAndRun(new GameStatus());

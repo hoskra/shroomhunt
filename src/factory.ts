@@ -44,6 +44,7 @@ export class Factory extends ECS.Component {
 
   restartGame() {
 		this.sendMessage(Messages.GAME_PAUSE, {} );
+		this.SC.stopBackgroundMusic();
     this.scene.stage.destroyChildren();
 
 		Builders.displayScore(this.scene);

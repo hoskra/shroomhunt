@@ -51,6 +51,9 @@ export class SoundComponent extends ECS.Component {
   pauseBackgroundMusic() {
     this.background.pause();
   }
+  stopBackgroundMusic() {
+    this.background.stop();
+  }
   isPlaying() {
     return this.background.isPlaying;
   }
