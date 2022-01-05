@@ -11,7 +11,9 @@ export enum Assets {
 	MUSHROOM = 'mushroom',
 	HEART = 'heart',
   SOUND_ON = 'sound_on',
-  SOUND_OFF = 'sound_off'
+  SOUND_OFF = 'sound_off',
+  PLAY = 'play',
+  PAUSE = 'pause'
 }
 
 export enum GameStates {
@@ -28,8 +30,6 @@ export enum Messages {
   GAME_PAUSE = "GAME_PAUSE",
   GAME_FINISH = "GAME_FINISH",
   GAME_RESTART = "GAME_RESTART",
-  PLAYER_1_DEAD = "PLAYER_1_DEAD",
-  PLAYER_2_DEAD = "PLAYER_2_DEAD",
   MONSTER_POSITION = "MONSTER_POSITION",
 }
 

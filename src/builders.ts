@@ -7,6 +7,7 @@ import { player1_constants, player2_constants } from './constants/player-constan
 import { GameStatus } from './game-components/game-status';
 import { Monster } from './game-components/monster';
 import { MuteButton } from './game-components/mute-button';
+import { PauseButton } from './game-components/pause-button';
 import { Player } from './game-components/player';
 import { ShroomManager } from './game-components/shroom-manager';
 
@@ -15,7 +16,7 @@ import { TimeCounter } from './game-components/time-counter'
 export class Builders {
 
   static muteButtonBuilder(scene: ECS.Scene) {
-    let soundOff = new ECS.Builder(scene.stage)
+    new ECS.Builder(scene.stage)
       .localPos(WINDOW_WIDTH*0.97, WINDOW_HEIGHT*0.03)
       .anchor(0.5)
       .withComponent(new MuteButton())
@@ -23,21 +24,17 @@ export class Builders {
       .withParent(scene.stage)
       .asSprite(PIXI.Texture.from(Assets.SOUND_OFF))
       .build();
-      soundOff.scale.x = 0.11;
-      soundOff.scale.y = 0.11;
-      soundOff.alpha = 1;
+  }
 
-    let soundOn = new ECS.Builder(scene.stage)
-      .localPos(WINDOW_WIDTH*0.97, WINDOW_HEIGHT*0.03)
-      .anchor(0.5)
-      .withName("soundOn")
-      .withParent(scene.stage)
-      .asSprite(PIXI.Texture.from(Assets.SOUND_ON))
-      .build();
-
-    soundOn.scale.x = 0.11;
-    soundOn.scale.y = 0.11;
-    soundOn.alpha = 0;
+  static pauseButtonBuilder(scene: ECS.Scene) {
+    new ECS.Builder(scene.stage)
+    .localPos(WINDOW_WIDTH*0.93, WINDOW_HEIGHT*0.03)
+    .anchor(0.5)
+    .withComponent(new PauseButton())
+    .withName("pause")
+    .withParent(scene.stage)
+    .asSprite(PIXI.Texture.from(Assets.PAUSE))
+    .build();
   }
 
   static shroomsBuilder(scene: ECS.Scene) {

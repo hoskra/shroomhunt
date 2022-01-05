@@ -49,6 +49,9 @@ class ShroomHunt {
 			.add(Assets.HEART, './assets/hearts.png')
 			.add(Assets.SOUND_ON, './assets/sound_on.png')
 			.add(Assets.SOUND_OFF, './assets/sound_off.png')
+			.add(Assets.PLAY, './assets/play.png')
+			.add(Assets.PAUSE, './assets/pause.png')
+
 
 			.load(() => this.onAssetsLoaded());
 

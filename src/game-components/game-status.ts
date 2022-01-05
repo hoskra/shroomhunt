@@ -11,8 +11,6 @@ export class GameStatus extends ECS.Component {
   player1_score: number;
   player2_score: number;
   caveWithMonster: number = -1;
-  player1_alive: boolean = true;
-  player2_alive: boolean = true;
 
   constructor() {
     super();
@@ -51,52 +49,45 @@ export class GameStatus extends ECS.Component {
   onInit() {
     this.time = TIME_LIMIT;
     this.subscribe(Messages.GAME_RUNNING, Messages.GAME_PAUSE, Messages.GAME_FINISH, Messages.GAME_RESTART,
-      Messages.MONSTER_POSITION,
-      Messages.PLAYER_1_DEAD, Messages.PLAYER_2_DEAD);
+      Messages.MONSTER_POSITION);
   }
 
   onMessage(msg: ECS.Message) {
     switch(msg.action) {
       case Messages.WELCOME_SCREEN:
         this.stateId = GameStates.WELCOME_SCREEN;
-        console.log("Welcome screen.")
+        // console.log("Welcome screen.")
         break;
       case Messages.GAME_RUNNING:
         this.stateId = GameStates.RUNNING;
-        console.log("Game started.")
+        // console.log("Game started.")
         break;
       case Messages.GAME_PAUSE:
         this.stateId = GameStates.PAUSE;
-        console.log("Game paused.")
+        // console.log("Game paused.")
         break;
       case Messages.GAME_FINISH:
         this.stateId = GameStates.FINISH;
-        console.log("Game finished.")
+        // console.log("Game finished.")
         const factory = this.scene.findGlobalComponentByName<Factory>(Factory.name);
         factory.restartGame();
         break;
       case Messages.GAME_RESTART:
         this.stateId = GameStates.RESTART;
         this.time = TIME_LIMIT;
-        console.log("Game restarting.")
+        // console.log("Game restarting.")
         break;
       case Messages.MONSTER_POSITION:
         this.caveWithMonster = msg.data;
-        break;
-      case Messages.PLAYER_1_DEAD:
-        this.player1_alive = false;
-        break;
-      case Messages.PLAYER_2_DEAD:
-        this.player2_alive = false;
         break;
     }
   }
 
   onUpdate() {
     if (this.stateId === GameStates.RUNNING) {
-      if(!this.player1_alive && this.getScore2() > this.getScore1()) {
+      if(this.getScore2() > this.getScore1()) {
         this.stateId = GameStates.FINISH;
-      } else if (!this.player2_alive && this.getScore1() > this.getScore2()) {
+      } else if (this.getScore1() > this.getScore2()) {
         this.stateId = GameStates.FINISH;
       }
     }

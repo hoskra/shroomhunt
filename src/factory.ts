@@ -2,7 +2,6 @@ import * as ECS from '../libs/pixi-ecs';
 import { Builders } from './builders';
 import { Messages } from './constants/enum';
 import { GameStatus } from './game-components/game-status';
-import { ShroomManager } from './game-components/shroom-manager';
 import { SoundComponent } from './game-components/sound-component';
 import { WaitInputComponent } from './game-components/wait-input-component';
 import { WaitInputRestart } from './game-components/wait-input-restart';
@@ -37,6 +36,7 @@ export class Factory extends ECS.Component {
 			Builders.playersBuilder(this.scene);
 			Builders.scoreBuilder(this.scene);
 			Builders.muteButtonBuilder(this.scene);
+			Builders.pauseButtonBuilder(this.scene);
 
 			this.sendMessage(Messages.GAME_RUNNING, {} );
 		});

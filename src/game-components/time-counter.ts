@@ -4,6 +4,7 @@ import { TIME_LIMIT } from '../constants/game-constants';
 
 export class TimeCounter extends ECS.Component {
   time: number;
+	paused: boolean = false;
 
 	constructor(  ) {
       super();
@@ -11,10 +12,20 @@ export class TimeCounter extends ECS.Component {
 		}
 
 	onInit() {
+		this.subscribe(Messages.GAME_RUNNING, Messages.GAME_PAUSE);
 		setInterval( () => {
-			this.time --;
-
+			if(!this.paused) {
+				this.time --;
+			}
 			}, 1000)
+	}
+
+	onMessage(msg: ECS.Message) {
+		if (msg.action === Messages.GAME_PAUSE) {
+			this.paused = true;
+		} else if (msg.action === Messages.GAME_RUNNING) {
+			this.paused = false;
+		}
 	}
 
 	onUpdate() {

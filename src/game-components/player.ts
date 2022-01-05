@@ -1,10 +1,8 @@
 import * as ECS from '../../libs/pixi-ecs';
-import { ComponentState } from '../../libs/pixi-ecs/engine/component';
 import { Messages } from '../constants/enum';
 import { MAXIMUM_CARRY, SPECIAL_SHROOM_BONUS, WINDOW_HEIGHT, WINDOW_WIDTH } from '../constants/game-constants';
 import { CAVES, COORDS_PLATFORM, SHROOM_VALID_COORDS, SPECIAL_SHROOM_VALID_COORDS } from '../constants/map-coordinates';
 import { GameStatus } from './game-status';
-import { Monster } from './monster';
 import { ShroomManager } from './shroom-manager';
 import { SoundComponent } from './sound-component';
 
@@ -12,7 +10,6 @@ export class Player extends ECS.Component {
 
   score                 : number = 0;
   takenShrooms          : number = 0;
-  health                : number = 3;
   move                  : number = 4;
   offset                : number = 25;
   facingLeft            : boolean;
@@ -20,6 +17,7 @@ export class Player extends ECS.Component {
   jumping               : number = 0;
   entering              : number = 0;
   isStandingOnPlatform  : boolean = true;
+  paused                : boolean = false;
   GS: GameStatus;
   SC: SoundComponent;
   SM: ShroomManager;
@@ -47,24 +45,32 @@ export class Player extends ECS.Component {
 
     // flip sprite
     if(!this.facingLeft) this.owner.scale.x *= -1;
+		this.subscribe(Messages.GAME_RUNNING, Messages.GAME_PAUSE);
   }
 
+  onMessage(msg: ECS.Message) {
+		if (msg.action === Messages.GAME_PAUSE) {
+			this.paused = true;
+		} else if (msg.action === Messages.GAME_RUNNING) {
+			this.paused = false;
+		}
+	}
+
   onUpdate(delta: number, absolute: number) {
-    // this.checkIfDead();
+    if(!this.paused) {
+      if(this.KC.isKeyPressed(this.playerConstants.left_code))  { this.moveLeft (delta * 0.25); }
+      if(this.KC.isKeyPressed(this.playerConstants.right_code)) { this.moveRight(delta * 0.25); }
+      if(this.KC.isKeyPressed(this.playerConstants.jump_code))  { this.jump(); }
+      if(this.KC.isKeyPressed(this.playerConstants.down_code))  { this.enterCave(absolute); }
 
-    if(this.KC.isKeyPressed(this.playerConstants.left_code))  { this.moveLeft (delta * 0.25); }
-    if(this.KC.isKeyPressed(this.playerConstants.right_code)) { this.moveRight(delta * 0.25); }
-    if(this.KC.isKeyPressed(this.playerConstants.jump_code))  { this.jump(); }
-    if(this.KC.isKeyPressed(this.playerConstants.down_code))  { this.enterCave(absolute); }
-
-    this.gravity();
-    this.processJumping();
-    this.processCaveEntering();
-    this.avoidFallingOfScreen();
-    this.processYellowShroomCollision();
-    this.processBasketInteraction();
-    this.processRedShroomCollision();
-
+      this.gravity();
+      this.processJumping();
+      this.processCaveEntering();
+      this.avoidFallingOfScreen();
+      this.processYellowShroomCollision();
+      this.processBasketInteraction();
+      this.processRedShroomCollision();
+    }
   }
 
   shroomCnt() {
@@ -72,13 +78,6 @@ export class Player extends ECS.Component {
     x.asText().text = this.takenShrooms.toString();
     x.position.x = this.owner.position.x + 5;
     x.position.y = this.owner.position.y - 75;
-  }
-
-  checkIfDead() {
-    if(this.health <= 0 ) {
-      this.finish();
-      return;
-    }
   }
 
   writeToScore() {
@@ -139,29 +138,10 @@ export class Player extends ECS.Component {
   }
 
   beBitten() {
-    this.health--;
     this.SC.playMonster();
-    let name = "p";
-    // if(this.playerID == 0) name += "1";
-    // else if(this.playerID == 1) name += "2";
-    // name += "_health";
-    // let s = this.scene.findObjectByName(name);
-    // s.asText().text = this.health.toString();
-
     let x = this.scene.findObjectByName('collected_player' + (this.playerID+1));
     this.takenShrooms = 0;
     x.asText().text = this.takenShrooms.toString();
-  }
-
-  die() {
-    if(this.playerID == 0) {
-      this.finish();
-      this.sendMessage(Messages.PLAYER_1_DEAD);
-    }
-    else {
-      this.finish();
-      this.sendMessage(Messages.PLAYER_2_DEAD);
-    }
   }
 
   processRedShroomCollision() {
