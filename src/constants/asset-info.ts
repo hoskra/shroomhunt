@@ -3,5 +3,5 @@ export const SoundInfo = {
   "pickRed" : './assets/slime2.wav',
   "basket" : './assets/interface2.wav',
   "monster" : './assets/mnstr6.wav',
-  "background" : './assets/trpaslici.mp3',
+  "background" : './assets/trpaslici_remaster.mp3',
 }
