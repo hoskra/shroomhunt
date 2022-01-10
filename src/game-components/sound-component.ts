@@ -3,6 +3,7 @@ import sound from 'pixi-sound'
 
 import { SoundInfo } from '../constants/asset-info';
 import { BACKGROUND_VOLUME } from '../constants/game-constants';
+import { Messages } from '../constants/enum';
 export class SoundComponent extends ECS.Component {
 
   public pickYellow: any;
@@ -21,6 +22,24 @@ export class SoundComponent extends ECS.Component {
     this.basket = sound.Sound.from(SoundInfo.basket);
     this.monster = sound.Sound.from(SoundInfo.monster);
     this.background = sound.Sound.from(SoundInfo.background);
+    this.subscribe(Messages.PLAY_MUSIC, Messages.STOP_MUSIC, Messages.PLAY_BASKET, Messages.PLAY_MONSTER);
+  }
+
+  onMessage(msg: ECS.Message) {
+    switch (msg.action) {
+      case Messages.PLAY_MUSIC:
+        this.playBackgroundMusic();
+        break;
+      case Messages.STOP_MUSIC:
+        this.stopBackgroundMusic();
+        break;
+      case Messages.PLAY_BASKET:
+        this.playBasket();
+        break;
+      case Messages.PLAY_MONSTER:
+        this.playMonster();
+        break;
+    }
   }
 
   playPickYellow() {

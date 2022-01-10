@@ -4,7 +4,6 @@ import { MAXIMUM_CARRY, SPECIAL_SHROOM_BONUS, WINDOW_HEIGHT, WINDOW_WIDTH } from
 import { CAVES, COORDS_PLATFORM, SHROOM_VALID_COORDS, SPECIAL_SHROOM_VALID_COORDS } from '../constants/map-coordinates';
 import { GameStatus } from './game-status';
 import { ShroomManager } from './shroom-manager';
-import { SoundComponent } from './sound-component';
 
 export class Player extends ECS.Component {
 
@@ -19,7 +18,6 @@ export class Player extends ECS.Component {
   isStandingOnPlatform  : boolean = true;
   paused                : boolean = false;
   GS: GameStatus;
-  SC: SoundComponent;
   SM: ShroomManager;
   KC: ECS.KeyInputComponent;
 
@@ -39,7 +37,6 @@ export class Player extends ECS.Component {
     this.facingLeft = this.playerConstants.facingLeft;
     this.previousDirectionLeft = this.playerConstants.facingLeft;
     this.GS = this.scene.findGlobalComponentByName<GameStatus>(GameStatus.name);
-    this.SC = this.scene.findGlobalComponentByName<SoundComponent>(SoundComponent.name);
     this.SM = this.scene.findGlobalComponentByName<ShroomManager>(ShroomManager.name);
     this.KC = this.scene.findGlobalComponentByName<ECS.KeyInputComponent>(ECS.KeyInputComponent.name);
 
@@ -138,9 +135,11 @@ export class Player extends ECS.Component {
   }
 
   beBitten() {
-    this.SC.playMonster();
+    this.sendMessage(Messages.PLAY_MONSTER, {} );
+
     let x = this.scene.findObjectByName('collected_player' + (this.playerID+1));
-    this.takenShrooms = 0;
+    this.takenShrooms -= 5;
+    if (this.takenShrooms < 0) this.takenShrooms = 0;
     x.asText().text = this.takenShrooms.toString();
   }
 
@@ -221,7 +220,7 @@ export class Player extends ECS.Component {
         this.score += this.takenShrooms;
           this.writeToScore();
           this.takenShrooms = 0;
-          this.SC.playBasket();
+		      this.sendMessage(Messages.PLAY_BASKET, {} );
       }
     }
   }

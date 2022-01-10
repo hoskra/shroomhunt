@@ -195,17 +195,6 @@ export class Builders {
       .withParent(scene.stage)
       .scale(0.7)
       .build();
-
-    // x += 150;
-
-    // this.textBuilder(scene, x, y, "3", 35, healthName);
-    // new ECS.Builder(scene)
-    //   .localPos(x + heart_offset, y)
-    //   .anchor(0.5)
-    //   .asSprite(PIXI.Texture.from(Assets.HEART))
-    //   .withParent(scene.stage)
-    //   .scale(0.7)
-    //   .build();
   }
 
   static scoreBuilder(scene: ECS.Scene) {

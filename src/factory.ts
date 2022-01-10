@@ -1,15 +1,11 @@
 import * as ECS from '../libs/pixi-ecs';
 import { Builders } from './builders';
 import { Messages } from './constants/enum';
-import { GameStatus } from './game-components/game-status';
-import { SoundComponent } from './game-components/sound-component';
 import { WaitInputComponent } from './game-components/wait-input-component';
 import { WaitInputRestart } from './game-components/wait-input-restart';
 export class Factory extends ECS.Component {
 	multiplayer: boolean = false;
 	previous: number;
-	GS: GameStatus = null;
-	SC: SoundComponent = null;
 
   constructor(scene: ECS.Scene) {
 		super();
@@ -17,15 +13,10 @@ export class Factory extends ECS.Component {
 		this.newGame();
 	}
 
-	onInit() {
-		this.GS = this.scene.findGlobalComponentByName<GameStatus>(GameStatus.name);
-		this.SC = this.scene.findGlobalComponentByName<SoundComponent>(SoundComponent.name);
-	}
-
 	loadGame() {
 		return new ECS.ChainComponent()
 		.call(() => {
-			this.SC.playBackgroundMusic();
+			this.sendMessage(Messages.PLAY_MUSIC, {} );
 
 			Builders.backgroundBuilder(this.scene);
 			Builders.caveBuilder(this.scene);
@@ -44,7 +35,7 @@ export class Factory extends ECS.Component {
 
   restartGame() {
 		this.sendMessage(Messages.GAME_PAUSE, {} );
-		this.SC.stopBackgroundMusic();
+		this.sendMessage(Messages.STOP_MUSIC, {} );
     this.scene.stage.destroyChildren();
 
 		Builders.displayScore(this.scene);
