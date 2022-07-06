@@ -25,15 +25,16 @@ export class ShroomManager extends ECS.Component {
     this.shroomCnt = SHROOM_CNT;
     this.specialShroomCnt = SPECIAL_SHROOM_CNT;
   }
-
+  
   onInit() {
     this.SC = this.scene.findGlobalComponentByName<SoundComponent>(SoundComponent.name);
   }
 
   growShrooms(scene: ECS.Scene) {
+    this.shroomCnt = SHROOM_CNT;
     this.shroomVector = [];
-    for(let i = 0; i < SHROOM_CNT; i++) this.shroomVector.push(1)
-    for(let i = 0; i < SHROOM_VALID_COORDS.length - SHROOM_CNT; i++) this.shroomVector.push(0)
+    for(let i = 0; i < SHROOM_CNT; i++) this.shroomVector.push(true)
+    for(let i = 0; i < SHROOM_VALID_COORDS.length - SHROOM_CNT; i++) this.shroomVector.push(false)
     shuffle(this.shroomVector);
 
     SHROOM_VALID_COORDS.forEach((shroom, index) => {
@@ -50,9 +51,10 @@ export class ShroomManager extends ECS.Component {
   }
 
   growSpecialShrooms(scene: ECS.Scene) {
+    this.specialShroomCnt = SPECIAL_SHROOM_CNT;
     this.specialShroomVector = [];
-    for(let i = 0; i < SPECIAL_SHROOM_CNT; i++) this.specialShroomVector.push(1)
-    for(let i = 0; i < SPECIAL_SHROOM_VALID_COORDS.length - SPECIAL_SHROOM_CNT; i++) this.specialShroomVector.push(0)
+    for(let i = 0; i < SPECIAL_SHROOM_CNT; i++) this.specialShroomVector.push(true)
+    for(let i = 0; i < SPECIAL_SHROOM_VALID_COORDS.length - SPECIAL_SHROOM_CNT; i++) this.specialShroomVector.push(false)
     shuffle(this.specialShroomVector);
 
     SPECIAL_SHROOM_VALID_COORDS.forEach((shroom, index) => {
@@ -91,13 +93,14 @@ export class ShroomManager extends ECS.Component {
 
     this.specialShroomCnt--;
   }
+  
 
   onUpdate() {
-    if(this.shroomCnt == 0) {
+    if(this.shroomCnt === 0) {
       this.shroomCnt = SHROOM_CNT;
       this.growShrooms(this.scene);
     }
-    if(this.specialShroomCnt == 0) {
+    if(this.specialShroomCnt === 0) {
       this.specialShroomCnt = SPECIAL_SHROOM_CNT;
       this.growSpecialShrooms(this.scene);
     }
