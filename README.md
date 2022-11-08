@@ -6,7 +6,7 @@
 
 The idea of gameplay is from an old PC game called Herkules.
 
-![preview](shroomhunt.gif)
+![preview](doc/shroomhunt.gif)
 
 ## Technical
 
@@ -21,7 +21,7 @@ The project is powered by ParcelJS, TypeScript, PixiJS and ECSLite libraries.
 
 ### Game objects diagram
 
-![Diagram](shroomhunt_diagram.drawio.png)
+![Diagram](doc/shroomhunt_diagram.drawio.png)
 
 ## Asset source
 - graphical assets - hoskra
