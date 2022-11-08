@@ -1,19 +1,29 @@
 # Shroomhunt
 
-- **Shroomhunt** is available at [Netlify](https://shroomhunt.netlify.app).
+> **Shroomhunt** is 2D platform game with two player game mode. It was made as a semestral work. Game is [available online](https://shroomhunt.netlify.app).
 
-![Diagram](shroomhunt_diagram.drawio.png)
+## Intend and execution
 
-## How to run this project
-- the project is powered by ParcelJS, TypeScript, PixiJS and ECSLite libraries
+The idea of gameplay is from an old PC game called Herkules.
+
+![preview](shroomhunt.gif)
+
+## Technical
+
+The project is powered by ParcelJS, TypeScript, PixiJS and ECSLite libraries.
+
+### How to run this project locally
+
 - install [NodeJS](https://nodejs.org/en/download/)
 - execute `npm install`
 - execute `npm run dev`
 - go to [http://localhost:1234](http://localhost:1234)
 
-## About this project
-- the idea of gameplay is from an old PC game called Herkules
-### Asset source
-- graphical assets - hoskorad
+### Game objects diagram
+
+![Diagram](shroomhunt_diagram.drawio.png)
+
+## Asset source
+- graphical assets - hoskra
 - background music - DJ Pes (specially made for this game)
 - sound effects - [opengameart](https://opengameart.org/content/rpg-sound-pack)
