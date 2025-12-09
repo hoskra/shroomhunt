@@ -1,5 +1,5 @@
 import * as ECS from '../../libs/pixi-ecs';
-import sound from 'pixi-sound'
+import { Sound } from '@pixi/sound'
 
 import { SoundInfo } from '../constants/asset-info';
 import { BACKGROUND_VOLUME } from '../constants/game-constants';
@@ -17,11 +17,11 @@ export class SoundComponent extends ECS.Component {
   }
 
   onInit() {
-    this.pickYellow = sound.Sound.from(SoundInfo.pickYellow);
-    this.pickRed = sound.Sound.from(SoundInfo.pickRed);
-    this.basket = sound.Sound.from(SoundInfo.basket);
-    this.monster = sound.Sound.from(SoundInfo.monster);
-    this.background = sound.Sound.from(SoundInfo.background);
+    this.pickYellow = Sound.from(SoundInfo.pickYellow);
+    this.pickRed = Sound.from(SoundInfo.pickRed);
+    this.basket = Sound.from(SoundInfo.basket);
+    this.monster = Sound.from(SoundInfo.monster);
+    this.background = Sound.from(SoundInfo.background);
     this.subscribe(Messages.PLAY_MUSIC, Messages.STOP_MUSIC, Messages.PLAY_BASKET, Messages.PLAY_MONSTER);
   }
 

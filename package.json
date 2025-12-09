@@ -16,11 +16,11 @@
     "@pixi/math": "^6.4.2",
     "@pixi/runner": "^6.4.2",
     "@pixi/settings": "^6.4.2",
+    "@pixi/sound": "^4.4.1",
     "@pixi/ticker": "^6.4.2",
     "@pixi/utils": "^6.4.2",
     "eventemitter3": "^4.0.7",
     "matter-js": "^0.17.1",
-    "pixi-sound": "^3.0.5",
     "pixi-stats": "^1.0.7",
     "pixi.js": "^6.1.2",
     "three": "^0.131.3"
@@ -37,7 +37,8 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "eslint-plugin-standard": "^5.0.0",
-    "parcel": "1.12.3",
-    "typescript": "^4.3.5"
+    "parcel-bundler": "^1.12.5",
+    "typescript": "^4.3.5",
+    "url": "^0.11.4"
   }
 }
