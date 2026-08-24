@@ -23,7 +23,11 @@
     "matter-js": "^0.17.1",
     "pixi-stats": "^1.0.7",
     "pixi.js": "^6.1.2",
+    "pixi.js-legacy": "^6.5.10",
     "three": "^0.131.3"
+  },
+  "alias": {
+    "pixi.js": "pixi.js-legacy"
   },
   "devDependencies": {
     "@types/matter-js": "^0.17.5",
